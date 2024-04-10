@@ -43,7 +43,7 @@ function start([ Interface ]) {
       handler: readFile,
     });
     function readFile() {
-      const file = Interface.modalSingleFile({});
+      const file = await Interface.modalSingleFile({});
       if (file !== null) {
         interpretFile(file);
       }
