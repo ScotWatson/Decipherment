@@ -23,7 +23,7 @@ function start([ Interface ]) {
     const mainLayout = BODY.createAttached({
       objectId: Interface.OBJECT_LAYOUT,
       parameters: {
-        layoutId: LAYOUT_HEADER,
+        layoutId: Interface.LAYOUT_HEADER,
       },
     });
     mainLayout.createAttached({
