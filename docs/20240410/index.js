@@ -64,7 +64,7 @@ function start([ Interface ]) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
       console.log(arrUnigramResults);
-      addUnigramTable(display);
+      addUnigramTable(display, arrUnigramResults);
       const mapDigram = countNgrams(text, 2);
       const mapTrigram = countNgrams(text, 3);
       const arrDigramResults = getDigramResults(mapDigram, mapUnigram, text.length);
@@ -78,7 +78,7 @@ function start([ Interface ]) {
         return (strength_a < strength_b) ? 1 : -1;
       });
       console.log(arrDigramResults);
-      addDigramTable(display);
+      addDigramTable(display, arrDigramResults);
       const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram, text.length);
       arrTrigramResults.sort(function (a, b) {
         const strength_a = a.trigramRatio / a.char3ratio;
@@ -86,7 +86,7 @@ function start([ Interface ]) {
         return (strength_a < strength_b) ? 1 : -1;
       });
       console.log(arrTrigramResults);
-      addTrigramTable(display);
+      addTrigramTable(display, arrTrigramResults);
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
@@ -114,7 +114,7 @@ function start([ Interface ]) {
       }
       return count;
     }
-    function addUnigramTable(display) {
+    function addUnigramTable(display, arrUnigramResults) {
       const tableUnigrams = document.createElement("table");
       const trUnigramHeader = document.createElement("tr");
       const thUnigram = document.createElement("th");
@@ -137,7 +137,7 @@ function start([ Interface ]) {
       }
       display.appendChild(tableUnigrams);
     }
-    function addDigramTable(display) {
+    function addDigramTable(display, arrDigramResults) {
       const tableDigrams = document.createElement("table");
       const trDigramHeader = document.createElement("tr");
       const thDigram = document.createElement("th");
@@ -174,7 +174,7 @@ function start([ Interface ]) {
       }
       display.appendChild(tableDigrams);
     }
-    function addTrigramTable(display) {
+    function addTrigramTable(display, arrTrigramResults) {
       const tableTrigrams = document.createElement("table");
       const trTrigramHeader = document.createElement("tr");
       const thTrigram = document.createElement("th");
