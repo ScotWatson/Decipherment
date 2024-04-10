@@ -48,6 +48,7 @@ function start([ Interface ]) {
         interpretFile(file);
       }
     }
+    const threshold = 5;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
@@ -88,7 +89,6 @@ function start([ Interface ]) {
       addTrigramTable(display);
       console.log("done");
     }
-    const threshold = 5;
     function countGram(gram, excludePrefixes, excludeSuffixes) {
       let index = 0;
       function check() {
@@ -407,5 +407,7 @@ function start([ Interface ]) {
       }
       display.appendChild(table);
     }
+  } catch (e) {
+    console.error(e);
   }
 }
