@@ -42,7 +42,7 @@ function start([ Interface ]) {
     }).addClickListener({
       handler: readFile,
     });
-    function readFile() {
+    async function readFile() {
       const file = await Interface.modalSingleFile({});
       if (file !== null) {
         interpretFile(file);
