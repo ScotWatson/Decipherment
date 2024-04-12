@@ -148,7 +148,7 @@ function start([ Interface ]) {
       if (text.length < n) {
         return mapNgram;
       }
-      let buffer = text.substring(n);
+      let buffer = text.substring(0, n);
       parse();
       let i = n + 1;
       while (i < text.length) {
