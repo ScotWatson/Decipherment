@@ -90,7 +90,7 @@ function start([ Interface ]) {
       console.log(arr4GramResults);
       addNgramTable(4, display, arr4GramResults);
       const map5Gram = countNgrams(text, 5);
-      const arr5GramResults = getNgramResults(5, map4Gram, mapTrigram, mapUnigram);
+      const arr5GramResults = getNgramResults(5, map5Gram, map4Gram, mapUnigram);
       arr5GramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
