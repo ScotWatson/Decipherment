@@ -210,7 +210,7 @@ function start([ Interface ]) {
       }
       let buffer = text.substring(0, n);
       parse();
-      let i = n + 1;
+      let i = n;
       while (i < text.length) {
         const char = text[i];
         buffer = buffer.substring(1) + char;
