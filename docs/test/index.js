@@ -91,8 +91,8 @@ function start([ Interface ]) {
         arrResultArrays[i].sort(function (a, b) {
           return (a.z < b.z) ? 1 : -1;
         });
-        console.log(arrResultsArrays[i]);
-        addNgramTable(i, display, arrResultsArrays[i]);
+        console.log(arrResultArrays[i]);
+        addNgramTable(i, display, arrResultArrays[i]);
       }
 /*      
       const map5Gram = countNgrams(text, 5);
