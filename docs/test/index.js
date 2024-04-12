@@ -208,15 +208,15 @@ function start([ Interface ]) {
       }
       const arrDigramResults = [];
       for (const objDigram of mapDigram.values()) {
-        if (objDigram.z > zThreshold) {
+//        if (objDigram.z > zThreshold) {
           arrDigramResults.push(objDigram);
-        }
+//        }
       }
       return arrDigramResults;
     }
     function getTrigramResults(mapTrigram, mapDigram, mapUnigram) {
       for (const objTrigram of mapTrigram.values()) {
-        const objPrefix = mapUnigram.get(objCount.str[0] + objCount.str[1]);
+        const objPrefix = mapDigram.get(objCount.str[0] + objCount.str[1]);
         const objSuffix = mapUnigram.get(objCount.str[2]);
         if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objDigram.count < threshold)) {
           objtrigram.z = 0;
@@ -232,9 +232,9 @@ function start([ Interface ]) {
       }
       const arrTrigramResults = [];
       for (const objTrigram of mapTrigram.values()) {
-        if (objTrigram.z > zThreshold) {
+//        if (objTrigram.z > zThreshold) {
           arrTrigramResults.push(objTrigram);
-        }
+//        }
       }
       return arrTrigramResults;
     }
