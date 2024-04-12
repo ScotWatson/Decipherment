@@ -96,6 +96,27 @@ function start([ Interface ]) {
       });
       console.log(arr5GramResults);
       addNgramTable(5, display, arr5GramResults);
+      const map6Gram = countNgrams(text, 6);
+      const arr6GramResults = getNgramResults(6, map6Gram, map5Gram, mapUnigram);
+      arr6GramResults.sort(function (a, b) {
+        return (a.z < b.z) ? 1 : -1;
+      });
+      console.log(arr6GramResults);
+      addNgramTable(6, display, arr6GramResults);
+      const map7Gram = countNgrams(text, 7);
+      const arr7GramResults = getNgramResults(7, map7Gram, map6Gram, mapUnigram);
+      arr7GramResults.sort(function (a, b) {
+        return (a.z < b.z) ? 1 : -1;
+      });
+      console.log(arr7GramResults);
+      addNgramTable(7, display, arr7GramResults);
+      const map8Gram = countNgrams(text, 8);
+      const arr8GramResults = getNgramResults(8, map8Gram, map7Gram, mapUnigram);
+      arr8GramResults.sort(function (a, b) {
+        return (a.z < b.z) ? 1 : -1;
+      });
+      console.log(arr8GramResults);
+      addNgramTable(8, display, arr8GramResults);
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
