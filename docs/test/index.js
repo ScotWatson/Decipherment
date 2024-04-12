@@ -89,6 +89,13 @@ function start([ Interface ]) {
       });
       console.log(arr4GramResults);
       addNgramTable(4, display, arr4GramResults);
+      const map5Gram = countNgrams(text, 5);
+      const arr5GramResults = getNgramResults(5, map4Gram, mapTrigram, mapUnigram);
+      arr5GramResults.sort(function (a, b) {
+        return (a.z < b.z) ? 1 : -1;
+      });
+      console.log(arr5GramResults);
+      addNgramTable(5, display, arr5GramResults);
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
@@ -393,7 +400,7 @@ function start([ Interface ]) {
       }
       display.appendChild(tableTrigrams);
     }
-    function addNGramTable(n, display, arrTrigramResults) {
+    function addNgramTable(n, display, arrTrigramResults) {
       const tableTrigrams = document.createElement("table");
       const trTrigramHeader = document.createElement("tr");
       const thTrigram = document.createElement("th");
