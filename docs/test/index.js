@@ -77,11 +77,18 @@ function start([ Interface ]) {
       });
       addDigramTable(display, arrDigramResults);
       const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram);
-      console.log(arrTrigramResults);
       arrTrigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
+      console.log(arrTrigramResults);
       addTrigramTable(display, arrTrigramResults);
+      const map4Gram = countNgrams(text, 4);
+      const arr4GramResults = getNgramResults(4, map4Gram, mapTrigram, mapUnigram);
+      arr4GramResults.sort(function (a, b) {
+        return (a.z < b.z) ? 1 : -1;
+      });
+      console.log(arr4GramResults);
+      addNgramTable(4, display, arr4GramResults);
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
@@ -237,6 +244,30 @@ function start([ Interface ]) {
       }
       return arrTrigramResults;
     }
+    function getNgramResults(n, mapFullGram, mapPrefixGram, mapUnigram) {
+      for (const objFull of mapFullGram.values()) {
+        const objPrefix = mapPrefixGram.get(objFull.str.substring(0, n - 1));
+        const objSuffix = mapUnigram.get(objFull.str[n - 1]);
+        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objFull.count < threshold)) {
+          objFull.z = 0;
+          continue;
+        }
+        const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
+        const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
+        const fullGramIndependentMean = objPrefix.mean * objSuffix.mean;
+        const fullGramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
+        const differenceMean = objFull.mean - fullGramIndependentMean;
+        const differenceVariance = objFull.variance + fullGramIndependentVariance;
+        objFull.z = differenceMean / differenceVariance;
+      }
+      const arrResults = [];
+      for (const objFull of mapFullGram.values()) {
+        if (objFull.z > zThreshold) {
+          arrResults.push(objFull);
+        }
+      }
+      return arrResults;
+    }
     function getUnigramPrefixes(arrDigramResults) {
       const mapUnigramPrefix = new Map();
       for (const objDigram of arrDigramResults) {
@@ -331,6 +362,42 @@ function start([ Interface ]) {
       const trTrigramHeader = document.createElement("tr");
       const thTrigram = document.createElement("th");
       thTrigram.append("Trigram");
+      trTrigramHeader.appendChild(thTrigram);
+      const thTrigramDigramRatio = document.createElement("th");
+      thTrigramDigramRatio.append("mean");
+      trTrigramHeader.appendChild(thTrigramDigramRatio);
+      const thTrigramChar3Ratio = document.createElement("th");
+      thTrigramChar3Ratio.append("Std Dev");
+      trTrigramHeader.appendChild(thTrigramChar3Ratio);
+      const thTrigramRatio = document.createElement("th");
+      thTrigramRatio.append("z");
+      trTrigramHeader.appendChild(thTrigramRatio);
+      tableTrigrams.appendChild(trTrigramHeader);
+      for (const item of arrTrigramResults) {
+        const tr = document.createElement("tr");
+        const tdTrigram = document.createElement("td");
+        tdTrigram.append(strPresent(item.str));
+        tr.appendChild(tdTrigram);
+        const tdDigramRatio = document.createElement("td");
+        tdDigramRatio.append(Math.round(item.mean * 1000000) / 10000);
+        tdDigramRatio.append("%");
+        tr.appendChild(tdDigramRatio);
+        const tdChar3Ratio = document.createElement("td");
+        tdChar3Ratio.append(Math.round(Math.sqrt(item.variance) * 1000000) / 10000);
+        tdChar3Ratio.append("%");
+        tr.appendChild(tdChar3Ratio);
+        const tdTrigramRatio = document.createElement("td");
+        tdTrigramRatio.append(Math.round(item.z * 100) / 100);
+        tr.appendChild(tdTrigramRatio);
+        tableTrigrams.appendChild(tr);
+      }
+      display.appendChild(tableTrigrams);
+    }
+    function addNGramTable(n, display, arrTrigramResults) {
+      const tableTrigrams = document.createElement("table");
+      const trTrigramHeader = document.createElement("tr");
+      const thTrigram = document.createElement("th");
+      thTrigram.append(n + "gram");
       trTrigramHeader.appendChild(thTrigram);
       const thTrigramDigramRatio = document.createElement("th");
       thTrigramDigramRatio.append("mean");
