@@ -85,7 +85,7 @@ function start([ Interface ]) {
 
       const arrMapGrams = [null, mapUnigram, mapDigram, mapTrigram];
       const arrResultArrays = [null, arrUnigramResults, arrDigramResults, arrTrigramResults];
-      for (let i = 4; i < 15; ++i) {
+      for (let i = 4; i < 30; ++i) {
         arrMapGrams[i] = countNgrams(text, i);
         arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
         arrResultArrays[i].sort(function (a, b) {
