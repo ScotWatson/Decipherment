@@ -50,7 +50,7 @@ function start([ Interface ]) {
       }
     }
     const threshold = 2;
-    const zThreshold = 3;
+    const zThreshold = 0;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
@@ -216,8 +216,8 @@ function start([ Interface ]) {
     }
     function getTrigramResults(mapTrigram, mapDigram, mapUnigram) {
       for (const objTrigram of mapTrigram.values()) {
-        const objPrefix = mapDigram.get(objCount.str[0] + objCount.str[1]);
-        const objSuffix = mapUnigram.get(objCount.str[2]);
+        const objPrefix = mapDigram.get(objTrigram.str[0] + objTrigram.str[1]);
+        const objSuffix = mapUnigram.get(objTrigram.str[2]);
         if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objDigram.count < threshold)) {
           objtrigram.z = 0;
           continue;
