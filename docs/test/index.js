@@ -83,8 +83,8 @@ function start([ Interface ]) {
       console.log(arrTrigramResults);
       addTrigramTable(display, arrTrigramResults);
 
-      const arrMapGrams = [mapUnigram, mapDigram, mapTrigram];
-      const arrResultArrays = [arrUnigramResults, arrDigramResults, arrTrigramResults];
+      const arrMapGrams = [null, mapUnigram, mapDigram, mapTrigram];
+      const arrResultArrays = [null, arrUnigramResults, arrDigramResults, arrTrigramResults];
       for (let i = 4; i < 15; ++i) {
         arrMapGrams[i] = countNgrams(text, i);
         arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
