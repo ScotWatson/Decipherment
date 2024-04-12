@@ -76,14 +76,12 @@ function start([ Interface ]) {
         return (a.z < b.z) ? 1 : -1;
       });
       addDigramTable(display, arrDigramResults);
-      /*
       const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram);
       console.log(arrTrigramResults);
       arrTrigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
       addTrigramTable(display, arrTrigramResults);
-      */
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
@@ -314,11 +312,11 @@ function start([ Interface ]) {
         tdDigram.append(strPresent(item.str));
         tr.appendChild(tdDigram);
         const tdChar1Ratio = document.createElement("td");
-        tdChar1Ratio.append(Math.round(item.mean * 10000) / 100);
+        tdChar1Ratio.append(Math.round(item.mean * 1000000) / 10000);
         tdChar1Ratio.append("%");
         tr.appendChild(tdChar1Ratio);
         const tdChar2Ratio = document.createElement("td");
-        tdChar2Ratio.append(Math.round(Math.sqrt(item.variance) * 10000) / 100);
+        tdChar2Ratio.append(Math.round(Math.sqrt(item.variance) * 1000000) / 10000);
         tdChar2Ratio.append("%");
         tr.appendChild(tdChar2Ratio);
         const tdDigramRatio = document.createElement("td");
@@ -350,11 +348,11 @@ function start([ Interface ]) {
         tdTrigram.append(strPresent(item.str));
         tr.appendChild(tdTrigram);
         const tdDigramRatio = document.createElement("td");
-        tdDigramRatio.append(Math.round(item.mean * 10000) / 100);
+        tdDigramRatio.append(Math.round(item.mean * 1000000) / 10000);
         tdDigramRatio.append("%");
         tr.appendChild(tdDigramRatio);
         const tdChar3Ratio = document.createElement("td");
-        tdChar3Ratio.append(Math.round(Math.sqrt(item.variance) * 10000) / 100);
+        tdChar3Ratio.append(Math.round(Math.sqrt(item.variance) * 1000000) / 10000);
         tdChar3Ratio.append("%");
         tr.appendChild(tdChar3Ratio);
         const tdTrigramRatio = document.createElement("td");
@@ -379,7 +377,6 @@ function start([ Interface ]) {
       trHeader.appendChild(thPrefixes);
       table.appendChild(trHeader);
       for (const item of arr) {
-        console.log(item);
         const tr = document.createElement("tr");
         const tdUnigram = document.createElement("td");
         tdUnigram.append(strPresent(item.str));
@@ -406,7 +403,6 @@ function start([ Interface ]) {
       trHeader.appendChild(thSuffixes);
       table.appendChild(trHeader);
       for (const item of arr) {
-        console.log(item);
         const tr = document.createElement("tr");
         const tdUnigram = document.createElement("td");
         tdUnigram.append(strPresent(item.str));
