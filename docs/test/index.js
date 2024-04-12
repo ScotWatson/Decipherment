@@ -59,7 +59,7 @@ function start([ Interface ]) {
         parameters: {
         },
       });
-      const mapUnigram = countUnigrams(text);
+      const mapUnigram = countNgrams(text, 1);
       const arrUnigramResults = getUnigramResults(mapUnigram, text.length);
       arrUnigramResults.sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
