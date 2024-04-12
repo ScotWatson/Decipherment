@@ -19,7 +19,6 @@ function fail() {
 
 function start([ Interface ]) {
   try {
-    alert("Test");
     const BODY = Interface.createBodyObject({});
     const mainLayout = BODY.createAttached({
       objectId: Interface.OBJECT_LAYOUT,
@@ -50,7 +49,7 @@ function start([ Interface ]) {
       }
     }
     const threshold = 2;
-    const zThreshold = 0;
+    const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
@@ -69,7 +68,6 @@ function start([ Interface ]) {
       const mapTrigram = countNgrams(text, 3);
       const arrDigramResults = getDigramResults(mapDigram, mapUnigram);
       console.log(arrDigramResults);
-      /*
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
@@ -78,6 +76,7 @@ function start([ Interface ]) {
         return (a.z < b.z) ? 1 : -1;
       });
       addDigramTable(display, arrDigramResults);
+      /*
       const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram);
       console.log(arrTrigramResults);
       arrTrigramResults.sort(function (a, b) {
@@ -204,15 +203,15 @@ function start([ Interface ]) {
         const char1MeanSquared = objChar1.mean * objChar1.mean;
         objDigram.digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
         objDigram.digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
-        objDigram.differenceMean = objDigram.digramIndependentMean - objDigram.mean;
-        objDigram.differenceVariance = objDigram.digramIndependentVariance + objDigram.variance;
+        objDigram.differenceMean = objDigram.mean - objDigram.digramIndependentMean;
+        objDigram.differenceVariance = objDigram.variance + objDigram.digramIndependentVariance;
         objDigram.z = objDigram.differenceMean / objDigram.differenceVariance;
       }
       const arrDigramResults = [];
       for (const objDigram of mapDigram.values()) {
-//        if (objDigram.z > zThreshold) {
+        if (objDigram.z > zThreshold) {
           arrDigramResults.push(objDigram);
-//        }
+        }
       }
       return arrDigramResults;
     }
@@ -228,8 +227,8 @@ function start([ Interface ]) {
         const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
         const trigramIndependentMean = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (prefixMeanSquared * prefixMeanSquared);
         const trigramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
-        const differenceMean = trigramIndependentMean - objTrigram.mean;
-        const differenceVariance = trigramIndependentVariance + objTrigram.variance;
+        const differenceMean = objTrigram.mean - trigramIndependentMean;
+        const differenceVariance = objTrigram.variance + trigramIndependentVariance;
         objTrigram.z = differenceMean / differenceVariance;
       }
       const arrTrigramResults = [];
