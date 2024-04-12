@@ -50,7 +50,7 @@ function start([ Interface ]) {
       }
     }
     const threshold = 5;
-    const zThreshold = -1000;
+    const zThreshold = 0;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
@@ -143,7 +143,7 @@ function start([ Interface ]) {
     }
     function countNgrams(text, n) {
       const mapNgram = new Map();
-      if (n < text.length) {
+      if (text.length < n) {
         return mapNgram;
       }
       let buffer = text.substring(n);
@@ -208,9 +208,9 @@ function start([ Interface ]) {
       }
       const arrDigramResults = [];
       for (const objDigram of mapDigram.values()) {
-//        if (objDigram.z > zThreshold) {
+        if (objDigram.z > zThreshold) {
           arrDigramResults.push(objDigram);
-//        }
+        }
       }
       return arrDigramResults;
     }
@@ -232,9 +232,9 @@ function start([ Interface ]) {
       }
       const arrTrigramResults = [];
       for (const objTrigram of mapTrigram.values()) {
-//        if (objTrigram.z > zThreshold) {
+        if (objTrigram.z > zThreshold) {
           arrTrigramResults.push(objTrigram);
-//        }
+        }
       }
       return arrTrigramResults;
     }
