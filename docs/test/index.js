@@ -255,6 +255,14 @@ function start([ Interface ]) {
       for (const objFull of mapFullGram.values()) {
         const objPrefix = mapPrefixGram.get(objFull.str.substring(0, n - 1));
         const objSuffix = mapUnigram.get(objFull.str[n - 1]);
+        if (!objPrefix) {
+          console.error("Unable to find:" + objFull.str.substring(0, n - 1));
+          continue;
+        }
+        if (!objSuffix) {
+          console.error("Unable to find:" + objFull.str[n - 1]);
+          continue;
+        }
         if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objFull.count < threshold)) {
           objFull.z = 0;
           continue;
