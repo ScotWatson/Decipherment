@@ -69,6 +69,7 @@ function start([ Interface ]) {
       const mapTrigram = countNgrams(text, 3);
       const arrDigramResults = getDigramResults(mapDigram, mapUnigram);
       console.log(arrDigramResults);
+      /*
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
@@ -83,6 +84,7 @@ function start([ Interface ]) {
         return (a.z < b.z) ? 1 : -1;
       });
       addTrigramTable(display, arrTrigramResults);
+      */
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
@@ -208,9 +210,9 @@ function start([ Interface ]) {
       }
       const arrDigramResults = [];
       for (const objDigram of mapDigram.values()) {
-        if (objDigram.z > zThreshold) {
+//        if (objDigram.z > zThreshold) {
           arrDigramResults.push(objDigram);
-        }
+//        }
       }
       return arrDigramResults;
     }
