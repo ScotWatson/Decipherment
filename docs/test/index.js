@@ -204,9 +204,9 @@ function start([ Interface ]) {
         const char1MeanSquared = objChar1.mean * objChar1.mean;
         objDigram.digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
         objDigram.digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
-        objDigram.differenceMean = digramIndependentMean - objDigram.mean;
-        objDigram.differenceVariance = digramIndependentVariance + objDigram.variance;
-        objDigram.z = differenceMean / differenceVariance;
+        objDigram.differenceMean = objDigram.digramIndependentMean - objDigram.mean;
+        objDigram.differenceVariance = objDigram.digramIndependentVariance + objDigram.variance;
+        objDigram.z = objDigram.differenceMean / objDigram.differenceVariance;
       }
       const arrDigramResults = [];
       for (const objDigram of mapDigram.values()) {
