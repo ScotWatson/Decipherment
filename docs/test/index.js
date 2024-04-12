@@ -50,7 +50,7 @@ function start([ Interface ]) {
       }
     }
     const threshold = 5;
-    const zThreshold = 0;
+    const zThreshold = -1000;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
@@ -68,6 +68,7 @@ function start([ Interface ]) {
       const mapDigram = countNgrams(text, 2);
       const mapTrigram = countNgrams(text, 3);
       const arrDigramResults = getDigramResults(mapDigram, mapUnigram);
+      console.log(arrDigramResults);
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
@@ -77,6 +78,7 @@ function start([ Interface ]) {
       });
       addDigramTable(display, arrDigramResults);
       const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram);
+      console.log(arrTrigramResults);
       arrTrigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
@@ -335,7 +337,7 @@ function start([ Interface ]) {
       thTrigramDigramRatio.append("mean");
       trTrigramHeader.appendChild(thTrigramDigramRatio);
       const thTrigramChar3Ratio = document.createElement("th");
-      thTrigramChar3Ratio.append("variance");
+      thTrigramChar3Ratio.append("Std Dev");
       trTrigramHeader.appendChild(thTrigramChar3Ratio);
       const thTrigramRatio = document.createElement("th");
       thTrigramRatio.append("z");
