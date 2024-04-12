@@ -49,8 +49,8 @@ function start([ Interface ]) {
         interpretFile(file);
       }
     }
-    const threshold = 5;
-    const zThreshold = 0;
+    const threshold = 2;
+    const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
