@@ -217,8 +217,8 @@ function start([ Interface ]) {
       for (const objTrigram of mapTrigram.values()) {
         const objPrefix = mapDigram.get(objTrigram.str[0] + objTrigram.str[1]);
         const objSuffix = mapUnigram.get(objTrigram.str[2]);
-        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objDigram.count < threshold)) {
-          objtrigram.z = 0;
+        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objTrigram.count < threshold)) {
+          objTrigram.z = 0;
           continue;
         }
         const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
