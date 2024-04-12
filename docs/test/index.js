@@ -82,13 +82,19 @@ function start([ Interface ]) {
       });
       console.log(arrTrigramResults);
       addTrigramTable(display, arrTrigramResults);
-      const map4Gram = countNgrams(text, 4);
-      const arr4GramResults = getNgramResults(4, map4Gram, mapTrigram, mapUnigram);
-      arr4GramResults.sort(function (a, b) {
-        return (a.z < b.z) ? 1 : -1;
-      });
-      console.log(arr4GramResults);
-      addNgramTable(4, display, arr4GramResults);
+
+      const arrMapGrams = [mapUnigram, mapDigram, mapTrigram];
+      const arrResultArrays = [arrUnigramResults, arrDigramResults, arrTrigramResults];
+      for (let i = 4; i < 15; ++i) {
+        arrMapGrams[i] = countNgrams(text, i);
+        arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
+        arrResultArrays[i].sort(function (a, b) {
+          return (a.z < b.z) ? 1 : -1;
+        });
+        console.log(arrResultsArrays[i]);
+        addNgramTable(i, display, arrResultsArrays[i]);
+      }
+/*      
       const map5Gram = countNgrams(text, 5);
       const arr5GramResults = getNgramResults(5, map5Gram, map4Gram, mapUnigram);
       arr5GramResults.sort(function (a, b) {
@@ -145,6 +151,7 @@ function start([ Interface ]) {
       });
       console.log(arr12GramResults);
       addNgramTable(12, display, arr12GramResults);
+      */
       console.log("done");
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
