@@ -202,10 +202,10 @@ function start([ Interface ]) {
         }
         const char0MeanSquared = objChar0.mean * objChar0.mean;
         const char1MeanSquared = objChar1.mean * objChar1.mean;
-        const digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
-        const digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
-        const differenceMean = digramIndependentMean - objDigram.mean;
-        const differenceVariance = digramIndependentVariance + objDigram.variance;
+        objDigram.digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
+        objDigram.digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
+        objDigram.differenceMean = digramIndependentMean - objDigram.mean;
+        objDigram.differenceVariance = digramIndependentVariance + objDigram.variance;
         objDigram.z = differenceMean / differenceVariance;
       }
       const arrDigramResults = [];
