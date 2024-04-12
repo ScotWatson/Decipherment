@@ -50,13 +50,13 @@ function start([ Interface ]) {
       }
     }
     const threshold = 5;
+    const zThreshold = 0;
     async function interpretFile(file) {
       const text = await file.text();
       const display = mainLayout.createAttached({
         area: "body",
         objectId: Interface.OBJECT_HTML,
         parameters: {
-          text: "Select File",
         },
       });
       const mapUnigram = countUnigrams(text);
@@ -64,29 +64,22 @@ function start([ Interface ]) {
       arrUnigramResults.sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
-      console.log(arrUnigramResults);
       addUnigramTable(display, arrUnigramResults);
       const mapDigram = countNgrams(text, 2);
       const mapTrigram = countNgrams(text, 3);
-      const arrDigramResults = getDigramResults(mapDigram, mapUnigram, text.length);
+      const arrDigramResults = getDigramResults(mapDigram, mapUnigram);
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
       addUnigramSuffixTable(arrUnigramSuffixes, display);
       arrDigramResults.sort(function (a, b) {
-        const strength_a = a.digramRatio / a.char2ratio;
-        const strength_b = b.digramRatio / b.char2ratio;
-        return (strength_a < strength_b) ? 1 : -1;
+        return (a.z < b.z) ? 1 : -1;
       });
-      console.log(arrDigramResults);
       addDigramTable(display, arrDigramResults);
-      const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram, text.length);
+      const arrTrigramResults = getTrigramResults(mapTrigram, mapDigram, mapUnigram);
       arrTrigramResults.sort(function (a, b) {
-        const strength_a = a.trigramRatio / a.char3ratio;
-        const strength_b = b.trigramRatio / b.char3ratio;
-        return (strength_a < strength_b) ? 1 : -1;
+        return (a.z < b.z) ? 1 : -1;
       });
-      console.log(arrTrigramResults);
       addTrigramTable(display, arrTrigramResults);
       console.log("done");
     }
@@ -114,103 +107,6 @@ function start([ Interface ]) {
         index = text.indexOf(gram, index + 1);
       }
       return count;
-    }
-    function addUnigramTable(display, arrUnigramResults) {
-      const tableUnigrams = document.createElement("table");
-      const trUnigramHeader = document.createElement("tr");
-      const thUnigram = document.createElement("th");
-      thUnigram.append("Unigram");
-      trUnigramHeader.appendChild(thUnigram);
-      const thUnigramRatio = document.createElement("th");
-      thUnigramRatio.append("Ratio");
-      trUnigramHeader.appendChild(thUnigramRatio);
-      tableUnigrams.appendChild(trUnigramHeader);
-      for (const item of arrUnigramResults) {
-        const tr = document.createElement("tr");
-        const tdUnigram = document.createElement("td");
-        tdUnigram.append(strPresent(item.str));
-        tr.appendChild(tdUnigram);
-        const tdRatio = document.createElement("td");
-        tdRatio.append(Math.round(item.ratio * 10000) / 100);
-        tdRatio.append("%");
-        tr.appendChild(tdRatio);
-        tableUnigrams.appendChild(tr);
-      }
-      display.appendChild(tableUnigrams);
-    }
-    function addDigramTable(display, arrDigramResults) {
-      const tableDigrams = document.createElement("table");
-      const trDigramHeader = document.createElement("tr");
-      const thDigram = document.createElement("th");
-      thDigram.append("Digram");
-      trDigramHeader.appendChild(thDigram);
-      const thDigramChar1Ratio = document.createElement("th");
-      thDigramChar1Ratio.append("Char1 Ratio");
-      trDigramHeader.appendChild(thDigramChar1Ratio);
-      const thDigramChar2Ratio = document.createElement("th");
-      thDigramChar2Ratio.append("Char2 Ratio");
-      trDigramHeader.appendChild(thDigramChar2Ratio);
-      const thDigramRatio = document.createElement("th");
-      thDigramRatio.append("Digram Ratio");
-      trDigramHeader.appendChild(thDigramRatio);
-      tableDigrams.appendChild(trDigramHeader);
-      for (const item of arrDigramResults) {
-        const tr = document.createElement("tr");
-        const tdDigram = document.createElement("td");
-        tdDigram.append(strPresent(item.str));
-        tr.appendChild(tdDigram);
-        const tdChar1Ratio = document.createElement("td");
-        tdChar1Ratio.append(Math.round(item.char1ratio * 10000) / 100);
-        tdChar1Ratio.append("%");
-        tr.appendChild(tdChar1Ratio);
-        const tdChar2Ratio = document.createElement("td");
-        tdChar2Ratio.append(Math.round(item.char2ratio * 10000) / 100);
-        tdChar2Ratio.append("%");
-        tr.appendChild(tdChar2Ratio);
-        const tdDigramRatio = document.createElement("td");
-        tdDigramRatio.append(Math.round(item.digramRatio * 10000) / 100);
-        tdDigramRatio.append("%");
-        tr.appendChild(tdDigramRatio);
-        tableDigrams.appendChild(tr);
-      }
-      display.appendChild(tableDigrams);
-    }
-    function addTrigramTable(display, arrTrigramResults) {
-      const tableTrigrams = document.createElement("table");
-      const trTrigramHeader = document.createElement("tr");
-      const thTrigram = document.createElement("th");
-      thTrigram.append("Trigram");
-      trTrigramHeader.appendChild(thTrigram);
-      const thTrigramDigramRatio = document.createElement("th");
-      thTrigramDigramRatio.append("Digram Ratio");
-      trTrigramHeader.appendChild(thTrigramDigramRatio);
-      const thTrigramChar3Ratio = document.createElement("th");
-      thTrigramChar3Ratio.append("Char 3 Ratio");
-      trTrigramHeader.appendChild(thTrigramChar3Ratio);
-      const thTrigramRatio = document.createElement("th");
-      thTrigramRatio.append("Trigram Ratio");
-      trTrigramHeader.appendChild(thTrigramRatio);
-      tableTrigrams.appendChild(trTrigramHeader);
-      for (const item of arrTrigramResults) {
-        const tr = document.createElement("tr");
-        const tdTrigram = document.createElement("td");
-        tdTrigram.append(strPresent(item.str));
-        tr.appendChild(tdTrigram);
-        const tdDigramRatio = document.createElement("td");
-        tdDigramRatio.append(Math.round(item.digramRatio * 10000) / 100);
-        tdDigramRatio.append("%");
-        tr.appendChild(tdDigramRatio);
-        const tdChar3Ratio = document.createElement("td");
-        tdChar3Ratio.append(Math.round(item.char3ratio * 10000) / 100);
-        tdChar3Ratio.append("%");
-        tr.appendChild(tdChar3Ratio);
-        const tdTrigramRatio = document.createElement("td");
-        tdTrigramRatio.append(Math.round(item.trigramRatio * 10000) / 100);
-        tdTrigramRatio.append("%");
-        tr.appendChild(tdTrigramRatio);
-        tableTrigrams.appendChild(tr);
-      }
-      display.appendChild(tableTrigrams);
     }
     function strPresent(str) {
       let ret = "";
@@ -245,9 +141,26 @@ function start([ Interface ]) {
     }
     function countNgrams(text, n) {
       const mapNgram = new Map();
-      let buffer = "".padEnd(n, " ");
-      for (const char of text) {
+      if (n < text.length) {
+        return mapNgram;
+      }
+      let buffer = text.substring(n);
+      parse();
+      let i = n + 1;
+      while (i < text.length) {
+        const char = text[i];
         buffer = buffer.substring(1) + char;
+        parse();
+        ++i;
+      }
+      const numSamples = (text.length - n + 1);
+      for (const obj of mapNgram.values()) {
+        obj.ratio = obj.count / numSamples;
+        obj.mean = (obj.count + 1) / (numSamples + 2);
+        obj.variance = ((obj.count + 1) * (obj.count + 2)) / ((numSamples + 2) * (numSamples + 3)) - (obj.mean * obj.mean);
+      }
+      return mapNgram;
+      function parse() {
         let obj = mapNgram.get(buffer);
         if (!obj) {
           obj = {
@@ -258,7 +171,6 @@ function start([ Interface ]) {
         }
         ++obj.count;
       }
-      return mapNgram;
     }
     function getUnigramResults(mapUnigram, textLength) {
       const arrUnigramResults = [];
@@ -276,47 +188,50 @@ function start([ Interface ]) {
       }
       return arrUnigramResults;
     }
-    function getDigramResults(mapDigram, mapUnigram, textLength) {
-      const arrDigramResults = [];
-      for (const entry of mapDigram.entries()) {
-        const objCount = entry[1];
-        if (objCount.count < threshold) {
-          // counts this low are unreliable
+    function getDigramResults(mapDigram, mapUnigram) {
+      for (const objDigram of mapDigram.values()) {
+        const objChar0 = mapUnigram.get(objDigram.str[0]);
+        const objChar1 = mapUnigram.get(objDigram.str[1]);
+        if ((objChar0.count < threshold) || (objChar1.count < threshold) || (objDigram.count < threshold)) {
+          objDigram.z = 0;
           continue;
         }
-        const objResult = {
-          str: objCount.str,
-        };
-        const char1 = objCount.str[0];
-        const char2 = objCount.str[1];
-        objResult.char1ratio = mapUnigram.get(char1).count / textLength;
-        objResult.char2ratio = mapUnigram.get(char2).count / textLength;
-        objResult.digramRatio = objCount.count / mapUnigram.get(char1).count;
-        if (objResult.digramRatio >= objResult.char2ratio) {
-          arrDigramResults.push(objResult);
+        const char0MeanSquared = objChar0.mean * objChar0.mean;
+        const char1MeanSquared = objChar1.mean * objChar1.mean;
+        const digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
+        const digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
+        const differenceMean = digramIndependentMean - objDigram.mean;
+        const differenceVariance = digramIndependentVariance + objDigram.variance;
+        objDigram.z = differenceMean / differenceVariance;
+      }
+      const arrDigramResults = [];
+      for (const objDigram of mapDigram.values()) {
+        if (objDigram.z > zThreshold) {
+          arrDigramResults.push(objDigram);
         }
       }
       return arrDigramResults;
     }
-    function getTrigramResults(mapTrigram, mapDigram, mapUnigram, textLength) {
-      const arrTrigramResults = [];
-      for (const entry of mapTrigram.entries()) {
-        const objCount = entry[1];
-        if (objCount.count < threshold) {
-          // counts this low are unreliable
+    function getTrigramResults(mapTrigram, mapDigram, mapUnigram) {
+      for (const objTrigram of mapTrigram.values()) {
+        const objPrefix = mapUnigram.get(objCount.str[0] + objCount.str[1]);
+        const objSuffix = mapUnigram.get(objCount.str[2]);
+        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objDigram.count < threshold)) {
+          objtrigram.z = 0;
           continue;
         }
-        const objResult = {
-          str: objCount.str,
-        };
-        const char1 = objCount.str[0];
-        const char2 = objCount.str[1];
-        const char3 = objCount.str[2];
-        objResult.digramRatio = mapDigram.get(char1 + char2).count / textLength;
-        objResult.char3ratio = mapUnigram.get(char3).count / textLength;
-        objResult.trigramRatio = objCount.count / mapDigram.get(char1 + char2).count;
-        if (objResult.trigramRatio >= objResult.char3ratio) {
-          arrTrigramResults.push(objResult);
+        const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
+        const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
+        const trigramIndependentMean = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (prefixMeanSquared * prefixMeanSquared);
+        const trigramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
+        const differenceMean = trigramIndependentMean - objTrigram.mean;
+        const differenceVariance = trigramIndependentVariance + objTrigram.variance;
+        objTrigram.z = differenceMean / differenceVariance;
+      }
+      const arrTrigramResults = [];
+      for (const objTrigram of mapTrigram.values()) {
+        if (objTrigram.z > zThreshold) {
+          arrTrigramResults.push(objTrigram);
         }
       }
       return arrTrigramResults;
@@ -350,6 +265,101 @@ function start([ Interface ]) {
         obj.suffixes.push(objDigram.str[1]);
       }
       return Array.from(mapUnigramSuffix.values());
+    }
+    function addUnigramTable(display, arrUnigramResults) {
+      const tableUnigrams = document.createElement("table");
+      const trUnigramHeader = document.createElement("tr");
+      const thUnigram = document.createElement("th");
+      thUnigram.append("Unigram");
+      trUnigramHeader.appendChild(thUnigram);
+      const thUnigramRatio = document.createElement("th");
+      thUnigramRatio.append("Ratio");
+      trUnigramHeader.appendChild(thUnigramRatio);
+      tableUnigrams.appendChild(trUnigramHeader);
+      for (const item of arrUnigramResults) {
+        const tr = document.createElement("tr");
+        const tdUnigram = document.createElement("td");
+        tdUnigram.append(strPresent(item.str));
+        tr.appendChild(tdUnigram);
+        const tdRatio = document.createElement("td");
+        tdRatio.append(Math.round(item.ratio * 10000) / 100);
+        tdRatio.append("%");
+        tr.appendChild(tdRatio);
+        tableUnigrams.appendChild(tr);
+      }
+      display.appendChild(tableUnigrams);
+    }
+    function addDigramTable(display, arrDigramResults) {
+      const tableDigrams = document.createElement("table");
+      const trDigramHeader = document.createElement("tr");
+      const thDigram = document.createElement("th");
+      thDigram.append("Digram");
+      trDigramHeader.appendChild(thDigram);
+      const thDigramChar1Ratio = document.createElement("th");
+      thDigramChar1Ratio.append("Mean");
+      trDigramHeader.appendChild(thDigramChar1Ratio);
+      const thDigramChar2Ratio = document.createElement("th");
+      thDigramChar2Ratio.append("Std Dev");
+      trDigramHeader.appendChild(thDigramChar2Ratio);
+      const thDigramRatio = document.createElement("th");
+      thDigramRatio.append("z");
+      trDigramHeader.appendChild(thDigramRatio);
+      tableDigrams.appendChild(trDigramHeader);
+      for (const item of arrDigramResults) {
+        const tr = document.createElement("tr");
+        const tdDigram = document.createElement("td");
+        tdDigram.append(strPresent(item.str));
+        tr.appendChild(tdDigram);
+        const tdChar1Ratio = document.createElement("td");
+        tdChar1Ratio.append(Math.round(item.mean * 10000) / 100);
+        tdChar1Ratio.append("%");
+        tr.appendChild(tdChar1Ratio);
+        const tdChar2Ratio = document.createElement("td");
+        tdChar2Ratio.append(Math.round(Math.sqrt(item.variance) * 10000) / 100);
+        tdChar2Ratio.append("%");
+        tr.appendChild(tdChar2Ratio);
+        const tdDigramRatio = document.createElement("td");
+        tdDigramRatio.append(Math.round(item.z * 100) / 100);
+        tr.appendChild(tdDigramRatio);
+        tableDigrams.appendChild(tr);
+      }
+      display.appendChild(tableDigrams);
+    }
+    function addTrigramTable(display, arrTrigramResults) {
+      const tableTrigrams = document.createElement("table");
+      const trTrigramHeader = document.createElement("tr");
+      const thTrigram = document.createElement("th");
+      thTrigram.append("Trigram");
+      trTrigramHeader.appendChild(thTrigram);
+      const thTrigramDigramRatio = document.createElement("th");
+      thTrigramDigramRatio.append("mean");
+      trTrigramHeader.appendChild(thTrigramDigramRatio);
+      const thTrigramChar3Ratio = document.createElement("th");
+      thTrigramChar3Ratio.append("variance");
+      trTrigramHeader.appendChild(thTrigramChar3Ratio);
+      const thTrigramRatio = document.createElement("th");
+      thTrigramRatio.append("z");
+      trTrigramHeader.appendChild(thTrigramRatio);
+      tableTrigrams.appendChild(trTrigramHeader);
+      for (const item of arrTrigramResults) {
+        const tr = document.createElement("tr");
+        const tdTrigram = document.createElement("td");
+        tdTrigram.append(strPresent(item.str));
+        tr.appendChild(tdTrigram);
+        const tdDigramRatio = document.createElement("td");
+        tdDigramRatio.append(Math.round(item.mean * 10000) / 100);
+        tdDigramRatio.append("%");
+        tr.appendChild(tdDigramRatio);
+        const tdChar3Ratio = document.createElement("td");
+        tdChar3Ratio.append(Math.round(Math.sqrt(item.variance) * 10000) / 100);
+        tdChar3Ratio.append("%");
+        tr.appendChild(tdChar3Ratio);
+        const tdTrigramRatio = document.createElement("td");
+        tdTrigramRatio.append(Math.round(item.z * 100) / 100);
+        tr.appendChild(tdTrigramRatio);
+        tableTrigrams.appendChild(tr);
+      }
+      display.appendChild(tableTrigrams);
     }
     function addUnigramPrefixTable(arr, display) {
       arr.sort(function (a,b) {
