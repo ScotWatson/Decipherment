@@ -199,7 +199,7 @@ function start([ Interface ]) {
         }
         const char0MeanSquared = objChar0.mean * objChar0.mean;
         const char1MeanSquared = objChar1.mean * objChar1.mean;
-        objDigram.digramIndependentMean = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
+        objDigram.digramIndependentMean = objChar0.mean * objChar1.mean;
         objDigram.digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
         objDigram.differenceMean = objDigram.mean - objDigram.digramIndependentMean;
         objDigram.differenceVariance = objDigram.variance + objDigram.digramIndependentVariance;
@@ -223,7 +223,7 @@ function start([ Interface ]) {
         }
         const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
         const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
-        const trigramIndependentMean = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (prefixMeanSquared * prefixMeanSquared);
+        const trigramIndependentMean = objPrefix.mean * objSuffix.mean;
         const trigramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
         const differenceMean = objTrigram.mean - trigramIndependentMean;
         const differenceVariance = objTrigram.variance + trigramIndependentVariance;
