@@ -75,7 +75,7 @@ function start([ Interface ]) {
       arrDigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
-      addNgramTable(n, display, arrDigramResults);
+      addNgramTable(2, display, arrDigramResults);
       const arrMapGrams = [null, mapUnigram, mapDigram];
       const arrResultArrays = [null, arrUnigramResults, arrDigramResults];
       let i = 3;
