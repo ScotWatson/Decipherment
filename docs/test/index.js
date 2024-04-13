@@ -106,12 +106,12 @@ function start([ Interface ]) {
         const objPrefix = mapLower.get(prefix);
         if (objPrefix) {
           if (objPrefix.count === item.count) {
-            mapLower.remove(prefix);
+            mapLower.delete(prefix);
           }
         }
         if (objSuffix) {
           if (objSuffix.count === item.count) {
-            mapLower.remove(suffix);
+            mapLower.delete(suffix);
           }
         }
       }
