@@ -72,7 +72,9 @@ function start([ Interface ]) {
           text: "Home",
         },
       }).addClickListener({
-        handler: mainDisplay.attach(),
+        handler: function () {
+          mainDisplay.attach();
+        },
       });
       const displayUnigram = appLayout.createDetached({
         area: "body",
