@@ -64,10 +64,6 @@ function start([ Interface ]) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
       addUnigramTable(display, arrUnigramResults);
-      const mapDigram = countNgrams(text, 2);
-      const mapTrigram = countNgrams(text, 3);
-      const arrDigramResults = getNgramResults(2, mapDigram, mapUnigram, mapUnigram);
-      console.log(arrDigramResults);
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
@@ -75,9 +71,9 @@ function start([ Interface ]) {
       arrDigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
-      addNgramTable(2, display, arrDigramResults);
+      const mapDigram = countNgrams(text, 2);     
       const arrMapGrams = [null, mapUnigram, mapDigram];
-      const arrResultArrays = [null, arrUnigramResults, arrDigramResults];
+      const arrResultArrays = [null, arrUnigramResults];
       let i = 3;
       console.log("Counting N-grams");
       while (arrMapGrams[i - 1].size !== 0) {
@@ -86,7 +82,7 @@ function start([ Interface ]) {
         removeSubsequence(arrMapGrams[i], arrMapGrams[i - 1]);
         ++i;
       }
-      for (let i = 3; i < arrMapGrams.length; ++i) {
+      for (let i = 2; i < arrMapGrams.length; ++i) {
         arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
         arrResultArrays[i].sort(function (a, b) {
           return (a.z < b.z) ? 1 : -1;
@@ -249,21 +245,21 @@ function start([ Interface ]) {
       for (const objFull of mapFullGram.values()) {
         const objPrefix = mapPrefixGram.get(objFull.str.substring(0, n - 1));
         const objSuffix = mapUnigram.get(objFull.str[n - 1]);
-        if (!objPrefix) {
-          console.error("Unable to find:" + objFull.str.substring(0, n - 1));
-          continue;
-        }
+        const fullCount = objFull.count;
+        const prefixCount = (function () {
+          if (!objPrefix) {
+            return fullCount;
+          } else {
+            return objPrefix.count;
+          }
+        })();
         if (!objSuffix) {
-          console.error("Unable to find:" + objFull.str[n - 1]);
-          continue;
-        }
-        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objFull.count < threshold)) {
-          objFull.z = 0;
+          console.error("Missing Unigram" + objFull.str[n - 1]);
           continue;
         }
         const distSuffixGivenPrefix = binomialAsNormDist({
-          numOccurances: objFull.count,
-          numSamples: objPrefix.count,
+          numOccurances: fullCount,
+          numSamples: prefixCount,
         });
         const distSuffix = objSuffix.normDist;
         const distDifference = normDistDifference({
