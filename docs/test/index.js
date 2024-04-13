@@ -140,6 +140,7 @@ function start([ Interface ]) {
       const arrTokenized = [];
       i = 0;
       while (i < text.length) {
+        console.log(i);
         for (let j = Math.min(arrMapResults.length - 1, (text.length - i)); j > 0; --j) {
           const search = text.substring(i, i + j - 1);
           const token = arrMapResults[j].get(search);
@@ -150,6 +151,7 @@ function start([ Interface ]) {
           }
         }
       }
+      console.log("Tokenized");
       const pTokenized = document.createElement("p");
       i = 0;
       for (const token of arrTokenized) {
@@ -164,6 +166,7 @@ function start([ Interface ]) {
         }
         ++i;
       }
+      console.log("Tokens Displayed");
       const displayTokenized = appLayout.createDetached({
         area: "body",
         objectId: Interface.OBJECT_HTML,
