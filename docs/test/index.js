@@ -52,10 +52,38 @@ function start([ Interface ]) {
     const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
-      const display = mainLayout.createAttached({
+      const appLayout = BODY.createAttached({
+        objectId: Interface.OBJECT_LAYOUT,
+        parameters: {
+          layoutId: Interface.LAYOUT_HEADER,
+        },
+      });
+      appLayout.createAttached({
+        area: "body",
+        objectId: Interface.OBJECT_TEXT,
+        parameters: {
+          text: "Home",
+        },
+      }).addClickListener({
+        handler: readFile,
+      });
+      const mainDisplay = appLayout.createAttached({
+        area: "body",
+        objectId: Interface.OBJECT_TILES,
+        parameters: {
+        },
+      });
+      const displayUnigram = appLayout.createDetached({
         area: "body",
         objectId: Interface.OBJECT_HTML,
         parameters: {
+        },
+      });
+      mainDisplay.addTile({
+        text: "Unigram",
+      }).addClickListener({
+        handler: function () {
+          displayUnigram.attach();
         },
       });
       const mapUnigram = countUnigrams(text);
@@ -63,7 +91,7 @@ function start([ Interface ]) {
       arrUnigramResults.sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
-      addUnigramTable(display, arrUnigramResults);
+      addUnigramTable(displayUnigram, arrUnigramResults);
       /*
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
@@ -88,15 +116,23 @@ function start([ Interface ]) {
         });
         console.log(arrResultArrays[i]);
       }
-      const nGramsTable = document.createElement("table");
-      const nGramsRow = document.createElement("tr");
-      nGramsTable.appendChild(nGramsRow);
       for (let i = 2; i < arrMapGrams.length; ++i) {
-        const tdTableCell = document.createElement("td");
+        const displayNgram = appLayout.createDetached({
+          area: "body",
+          objectId: Interface.OBJECT_HTML,
+          parameters: {
+          },
+        });
+        mainDisplay.addTile({
+          text: "Unigram",
+        }).addClickListener({
+          handler: function () {
+            displayNgram.attach();
+          },
+        });
         const nGramTable = createNgramTable(i, arrResultArrays[i]);
-        nGramsRow.appendChild(nGramTable);
+        displayNgram.appendChild(nGramTable);
       }
-      display.appendChild(nGramsTable);
       console.log("done");
     }
     function removeSubsequence(mapUpper, mapLower) {
@@ -355,6 +391,9 @@ function start([ Interface ]) {
       const thNgram = document.createElement("th");
       thNgram.append(n + "-gram");
       trNgramHeader.appendChild(thNgram);
+      const thNgramCount = document.createElement("th");
+      thNgramCount.append("Count");
+      trNgramHeader.appendChild(thNgramCount);
       const thNgramZ = document.createElement("th");
       thNgramZ.append("z");
       trNgramHeader.appendChild(thNgramZ);
@@ -364,6 +403,9 @@ function start([ Interface ]) {
         const tdNgram = document.createElement("td");
         tdNgram.append(strPresent(item.str));
         tr.appendChild(tdNgram);
+        const tdNgramCount = document.createElement("td");
+        tdNgramCount.append(item.count);
+        tr.appendChild(tdNgramCount);
         const tdNgramZ = document.createElement("td");
         tdNgramZ.append(Math.round(item.z * 100) / 100);
         tr.appendChild(tdNgramZ);
