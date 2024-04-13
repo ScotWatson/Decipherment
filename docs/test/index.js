@@ -33,7 +33,7 @@ function start([ Interface ]) {
         text: "Decipherment",
       },
     });
-    const mainBody = mainLayout.createAttached({
+    mainLayout.createAttached({
       area: "body",
       objectId: Interface.OBJECT_TEXT,
       parameters: {
@@ -52,7 +52,8 @@ function start([ Interface ]) {
     const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
-      const appLayout = mainBody.createAttached({
+      const appLayout = mainLayout.createAttached({
+        area: "body",
         objectId: Interface.OBJECT_LAYOUT,
         parameters: {
           layoutId: Interface.LAYOUT_HEADER,
