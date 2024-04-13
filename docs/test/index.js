@@ -363,7 +363,7 @@ function start([ Interface ]) {
         tdNgram.append(strPresent(item.str));
         tr.appendChild(tdNgram);
         const tdNgramRatio = document.createElement("td");
-        tdTrigramRatio.append(Math.round(item.z * 100) / 100);
+        tdNgramRatio.append(Math.round(item.z * 100) / 100);
         tr.appendChild(tdNgramRatio);
         tableNgrams.appendChild(tr);
       }
