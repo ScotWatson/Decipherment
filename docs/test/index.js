@@ -146,7 +146,7 @@ function start([ Interface ]) {
         let found = false;
         for (let j = Math.min(arrMapResults.length - 1, (text.length - i)); j > 0; --j) {
           const search = text.substring(i, i + j);
-          console.log(j, search);
+//          console.log(j, search);
           const token = arrMapResults[j].get(search);
           if (token) {
             arrTokenized.push(token);
