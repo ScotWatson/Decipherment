@@ -93,7 +93,7 @@ function start([ Interface ]) {
       nGramsTable.appendChild(nGramsRow);
       for (let i = 2; i < arrMapGrams.length; ++i) {
         const tdTableCell = document.createElement("td");
-        const nGramTable = createNgramTable(i, display, arrResultArrays[i]);
+        const nGramTable = createNgramTable(i, arrResultArrays[i]);
         nGramsRow.appendChild(nGramTable);
       }
       display.appendChild(nGramsTable);
