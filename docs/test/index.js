@@ -357,7 +357,7 @@ function start([ Interface ]) {
       thNgramZ.append("z");
       trNgramHeader.appendChild(thNgramZ);
       tableNgrams.appendChild(trNgramHeader);
-      for (const item of arrTrigramResults) {
+      for (const item of arrNgramResults) {
         const tr = document.createElement("tr");
         const tdNgram = document.createElement("td");
         tdNgram.append(strPresent(item.str));
