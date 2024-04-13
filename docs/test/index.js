@@ -139,6 +139,8 @@ function start([ Interface ]) {
       }
       const arrTokenized = [];
       i = 0;
+      console.log(arrMapResults.length);
+      console.log(text.length);
       while (i < text.length) {
         console.log(i);
         let found = false;
