@@ -48,7 +48,7 @@ function start([ Interface ]) {
         interpretFile(file);
       }
     }
-    const threshold = 2;
+    const threshold = 3;
     const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
