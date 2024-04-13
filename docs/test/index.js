@@ -219,7 +219,7 @@ function start([ Interface ]) {
       const normDist2MeanSquared = normDist2.mean * normDist2.mean;
       return {
         mean: normDist1.mean * normDist2.mean,
-        variance: ((normDist1.variance + normDist1MeanSquared) * (objSuffix.variance + normDist2MeanSquared)) - (normDist1MeanSquared * normDist2MeanSquared);
+        variance: ((normDist1.variance + normDist1MeanSquared) * (objSuffix.variance + normDist2MeanSquared)) - (normDist1MeanSquared * normDist2MeanSquared),
       };
     }
     function normDistDifference({
