@@ -58,7 +58,7 @@ function start([ Interface ]) {
         parameters: {
         },
       });
-      const mapUnigram = countNgrams(text, 1);
+      const mapUnigram = countUnigrams(text);
       const arrUnigramResults = getUnigramResults(mapUnigram, text.length);
       arrUnigramResults.sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
@@ -150,7 +150,7 @@ function start([ Interface ]) {
         ++obj.count;
       }
       for (const obj of mapUnigram.values()) {
-        obj.ratio = obj.count / numSamples;
+        obj.ratio = obj.count / text.length;
         obj.normDist = binomialAsNormDist({
           numOccurances: obj.count,
           numSamples: text.length,
