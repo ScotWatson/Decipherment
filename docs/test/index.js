@@ -195,7 +195,7 @@ function start([ Interface ]) {
       }
       for (const obj of mapNgram.values()) {
         if (obj.count < threshold) {
-          mapNgram.remove(obj.str);
+          mapNgram.delete(obj.str);
         }
       }
       return mapNgram;
@@ -212,20 +212,7 @@ function start([ Interface ]) {
       }
     }
     function getUnigramResults(mapUnigram, textLength) {
-      const arrUnigramResults = [];
-      for (const entry of mapUnigram.entries()) {
-        const objCount = entry[1];
-        if (objCount.count < threshold) {
-          continue;
-        }
-        let objResult = {
-          str: objCount.str,
-        };
-        const char1 = objCount.str[0];
-        objResult.ratio = objCount.count / textLength;
-        arrUnigramResults.push(objResult);
-      }
-      return arrUnigramResults;
+      return Array.from(mapUnigram.values());
     }
     function binomialAsNormDist({
       numOccurances,
