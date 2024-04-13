@@ -91,11 +91,10 @@ function start([ Interface ]) {
         },
       });
       const mapUnigram = countUnigrams(text);
-      const arrUnigramResults = getUnigramResults(mapUnigram, text.length);
-      arrUnigramResults.sort(function (a, b) {
+      const arrUnigram = Array.from(mapUnigramResults.values()).sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
-      addUnigramTable(displayUnigram, arrUnigramResults);
+      addUnigramTable(displayUnigram, arrUnigram);
       /*
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
@@ -104,7 +103,7 @@ function start([ Interface ]) {
       */
       const mapDigram = countNgrams(text, 2);     
       const arrMapGrams = [null, mapUnigram, mapDigram];
-      const arrMapResults = [null, mapUnigramResults];
+      const arrMapResults = [null, mapUnigram];
       let i = 3;
       console.log("Counting N-grams");
       while (arrMapGrams[i - 1].size !== 0) {
@@ -295,9 +294,6 @@ function start([ Interface ]) {
         }
         ++obj.count;
       }
-    }
-    function getUnigramResults(mapUnigram, textLength) {
-      return Array.from(mapUnigram.values());
     }
     function binomialAsNormDist({
       numOccurances,
