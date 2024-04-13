@@ -133,7 +133,7 @@ function start([ Interface ]) {
         const arrResult = Array.from(arrMapResults[i].values()).sort(function (a, b) {
           return (a.z < b.z) ? 1 : -1;
         });
-        console.log(arrResultArrays[i]);
+        console.log(arrResult);
         const nGramTable = createNgramTable(i, arrResult);
         displayNgram.appendChild(nGramTable);
       }
