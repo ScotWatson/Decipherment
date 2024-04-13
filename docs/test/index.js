@@ -141,14 +141,20 @@ function start([ Interface ]) {
       i = 0;
       while (i < text.length) {
         console.log(i);
+        let found = false;
         for (let j = Math.min(arrMapResults.length - 1, (text.length - i)); j > 0; --j) {
           const search = text.substring(i, i + j);
+          console.log(j, search);
           const token = arrMapResults[j].get(search);
           if (token) {
             arrTokenized.push(token);
             i += j;
+            found = true;
             break;
           }
+        }
+        if (!found) {
+          break;
         }
       }
       console.log("Tokenized");
