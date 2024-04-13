@@ -352,7 +352,7 @@ function start([ Interface ]) {
         });
         objFull.z = distDifference.mean / Math.sqrt(distDifference.variance);
       }
-      const mapResults = [];
+      const mapResults = new Map();
       for (const objFull of mapFullGram.values()) {
         if (objFull.z > zThreshold) {
           mapResults.set(objFull.str, objFull);
