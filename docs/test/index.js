@@ -76,24 +76,45 @@ function start([ Interface ]) {
         return (a.z < b.z) ? 1 : -1;
       });
       addDigramTable(display, arrDigramResults);
-      const arrTrigramResults = getNgramResults(3, mapTrigram, mapDigram, mapUnigram);
-      arrTrigramResults.sort(function (a, b) {
-        return (a.z < b.z) ? 1 : -1;
-      });
-      console.log(arrTrigramResults);
-      addTrigramTable(display, arrTrigramResults);
-      const arrMapGrams = [null, mapUnigram, mapDigram, mapTrigram];
-      const arrResultArrays = [null, arrUnigramResults, arrDigramResults, arrTrigramResults];
-      for (let i = 4; i < 100; ++i) {
+      const arrMapGrams = [null, mapUnigram, mapDigram];
+      const arrResultArrays = [null, arrUnigramResults, arrDigramResults];
+      let i = 3;
+      console.log("Counting N-grams");
+      while (arrMapGrams[i].size !== 0) {
+        console.log(i);
         arrMapGrams[i] = countNgrams(text, i);
+        removeSubsequence(arrMapGrams[i], arrMapGrams[i - 1]);
+        ++i;
+      }
+      for (let i = 3; i < arrMapGrams.length; ++i) {
         arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
         arrResultArrays[i].sort(function (a, b) {
           return (a.z < b.z) ? 1 : -1;
         });
         console.log(arrResultArrays[i]);
+      }
+      for (let i = 3; i < arrMapGrams.length; ++i) {
         addNgramTable(i, display, arrResultArrays[i]);
       }
       console.log("done");
+    }
+    function removeSubsequence(mapUpper, mapLower) {
+      for (const item of mapUpper.values()) {
+        const n = item.str.length;
+        const prefix = item.str.substring(0, n - 1);
+        const suffix = item.str.substring(1, n);
+        const objPrefix = mapLower.get(prefix);
+        if (objPrefix) {
+          if (objPrefix.count === item.count) {
+            mapLower.remove(prefix);
+          }
+        }
+        if (objSuffix) {
+          if (objSuffix.count === item.count) {
+            mapLower.remove(suffix);
+          }
+        }
+      }
     }
     function countGram(gram, excludePrefixes, excludeSuffixes) {
       let index = 0;
@@ -171,6 +192,11 @@ function start([ Interface ]) {
         buffer = buffer.substring(1) + char;
         parse();
         ++i;
+      }
+      for (const obj of mapNgrams.values()) {
+        if (obj.count < threshold) {
+          mapNgrams.remove(obj.str);
+        }
       }
       return mapNgram;
       function parse() {
