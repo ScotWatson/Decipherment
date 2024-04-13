@@ -226,8 +226,10 @@ function start([ Interface ]) {
       normDist1,
       normDist2,
     }) {
-      mean: normDist1.mean - normDist2.mean,
-      variance: normDist1.variance + normDist2.variance,
+      return {
+        mean: normDist1.mean - normDist2.mean,
+        variance: normDist1.variance + normDist2.variance,
+      };
     }
     function getNgramResults(n, mapFullGram, mapPrefixGram, mapUnigram) {
       for (const objFull of mapFullGram.values()) {
