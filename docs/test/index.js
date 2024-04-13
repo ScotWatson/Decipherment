@@ -104,7 +104,7 @@ function start([ Interface ]) {
       */
       const mapDigram = countNgrams(text, 2);     
       const arrMapGrams = [null, mapUnigram, mapDigram];
-      const arrResultArrays = [null, arrUnigramResults];
+      const arrMapResults = [null, mapUnigramResults];
       let i = 3;
       console.log("Counting N-grams");
       while (arrMapGrams[i - 1].size !== 0) {
@@ -114,11 +114,7 @@ function start([ Interface ]) {
         ++i;
       }
       for (let i = 2; i < arrMapGrams.length; ++i) {
-        arrResultArrays[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
-        arrResultArrays[i].sort(function (a, b) {
-          return (a.z < b.z) ? 1 : -1;
-        });
-        console.log(arrResultArrays[i]);
+        arrMapResults[i] = getNgramResults(i, arrMapGrams[i], arrMapGrams[i - 1], mapUnigram);
       }
       for (let i = 2; i < arrMapGrams.length; ++i) {
         const displayNgram = appLayout.createDetached({
@@ -135,9 +131,55 @@ function start([ Interface ]) {
             displayNgram.attach();
           },
         });
-        const nGramTable = createNgramTable(i, arrResultArrays[i]);
+        const arrResult = Array.from(arrMapResults[i].values()).sort(function (a, b) {
+          return (a.z < b.z) ? 1 : -1;
+        });
+        console.log(arrResultArrays[i]);
+        const nGramTable = createNgramTable(i, arrResult);
         displayNgram.appendChild(nGramTable);
       }
+      const arrTokenized = [];
+      let i = 0;
+      while (i < text.length) {
+        for (let j = Math.min(arrMapResults.length, (text.length - i)); j > 0; --j) {
+          const search = text.substring(i, i + j - 1);
+          const token = arrMapResults[j].get(search);
+          if (token) {
+            arrTokenized.push(token);
+            i += j;
+            break;
+          }
+        }
+      }
+      const pTokenized = document.createElement("p");
+      i = 0;
+      for (const token of arrTokenized) {
+        const span = document.createElement("span");
+        span.append(token.str);
+        if (i % 2) {
+          span.style.backgroundColor = "black";
+          span.style.color = "white";
+        } else {
+          span.style.backgroundColor = "white";
+          span.style.color = "black";
+        }
+        ++i;
+      }
+      const displayTokenized = appLayout.createDetached({
+        area: "body",
+        objectId: Interface.OBJECT_HTML,
+        parameters: {
+        },
+      });
+      mainDisplay.addItem({
+        imgSrc: "",
+        itemName: "Tokenized",
+      }).addClickListener({
+        handler: function () {
+          displayTokenized.attach();
+        },
+      });
+      displayTokenized.appendChild(pTokenized);
       console.log("done");
     }
     function removeSubsequence(mapUpper, mapLower) {
@@ -314,13 +356,13 @@ function start([ Interface ]) {
         });
         objFull.z = distDifference.mean / Math.sqrt(distDifference.variance);
       }
-      const arrResults = [];
+      const mapResults = [];
       for (const objFull of mapFullGram.values()) {
         if (objFull.z > zThreshold) {
-          arrResults.push(objFull);
+          mapResults.set(objFull.str, objFull);
         }
       }
-      return arrResults;
+      return mapResults;
     }
     function getUnigramPrefixes(arrDigramResults) {
       const mapUnigramPrefix = new Map();
