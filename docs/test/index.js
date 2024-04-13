@@ -64,13 +64,12 @@ function start([ Interface ]) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
       addUnigramTable(display, arrUnigramResults);
+      /*
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
       const arrUnigramSuffixes = getUnigramSuffixes(arrDigramResults);
       addUnigramSuffixTable(arrUnigramSuffixes, display);
-      arrDigramResults.sort(function (a, b) {
-        return (a.z < b.z) ? 1 : -1;
-      });
+      */
       const mapDigram = countNgrams(text, 2);     
       const arrMapGrams = [null, mapUnigram, mapDigram];
       const arrResultArrays = [null, arrUnigramResults];
