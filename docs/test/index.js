@@ -248,7 +248,7 @@ function start([ Interface ]) {
           continue;
         }
         const distSuffixGivenPrefix = binomialAsNormDist({
-          numOccurances: objDigram.count,
+          numOccurances: objFull.count,
           numSamples: objPrefix.count,
         });
         const distSuffix = objSuffix.normDist;
