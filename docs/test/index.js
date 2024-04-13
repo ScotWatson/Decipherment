@@ -91,7 +91,7 @@ function start([ Interface ]) {
         },
       });
       const mapUnigram = countUnigrams(text);
-      const arrUnigram = Array.from(mapUnigramResults.values()).sort(function (a, b) {
+      const arrUnigram = Array.from(mapUnigram.values()).sort(function (a, b) {
         return (a.ratio < b.ratio) ? 1 : -1;
       });
       addUnigramTable(displayUnigram, arrUnigram);
