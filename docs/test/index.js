@@ -88,9 +88,15 @@ function start([ Interface ]) {
         });
         console.log(arrResultArrays[i]);
       }
-      for (let i = 3; i < arrMapGrams.length; ++i) {
-        addNgramTable(i, display, arrResultArrays[i]);
+      const nGramsTable = document.createElement("table");
+      const nGramsRow = document.createElement("tr");
+      nGramsTable.appendChild(nGramsRow);
+      for (let i = 2; i < arrMapGrams.length; ++i) {
+        const tdTableCell = document.createElement("td");
+        const nGramTable = createNgramTable(i, display, arrResultArrays[i]);
+        nGramsRow.appendChild(nGramTable);
       }
+      display.appendChild(nGramsTable);
       console.log("done");
     }
     function removeSubsequence(mapUpper, mapLower) {
@@ -343,7 +349,7 @@ function start([ Interface ]) {
       }
       display.appendChild(tableUnigrams);
     }
-    function addNgramTable(n, display, arrNgramResults) {
+    function createNgramTable(n, arrNgramResults) {
       const tableNgrams = document.createElement("table");
       const trNgramHeader = document.createElement("tr");
       const thNgram = document.createElement("th");
@@ -363,7 +369,7 @@ function start([ Interface ]) {
         tr.appendChild(tdNgramZ);
         tableNgrams.appendChild(tr);
       }
-      display.appendChild(tableNgrams);
+      return tableNgrams;
     }
     function addUnigramPrefixTable(arr, display) {
       arr.sort(function (a,b) {
