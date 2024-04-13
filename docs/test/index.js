@@ -139,7 +139,7 @@ function start([ Interface ]) {
         displayNgram.appendChild(nGramTable);
       }
       const arrTokenized = [];
-      let i = 0;
+      i = 0;
       while (i < text.length) {
         for (let j = Math.min(arrMapResults.length, (text.length - i)); j > 0; --j) {
           const search = text.substring(i, i + j - 1);
