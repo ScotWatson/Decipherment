@@ -75,7 +75,7 @@ function start([ Interface ]) {
       arrDigramResults.sort(function (a, b) {
         return (a.z < b.z) ? 1 : -1;
       });
-      addDigramTable(n, display, arrDigramResults);
+      addNgramTable(n, display, arrDigramResults);
       const arrMapGrams = [null, mapUnigram, mapDigram];
       const arrResultArrays = [null, arrUnigramResults, arrDigramResults];
       let i = 3;
@@ -332,15 +332,15 @@ function start([ Interface ]) {
         tdUnigram.append(strPresent(item.str));
         tr.appendChild(tdUnigram);
         const tdRatioMean = document.createElement("td");
-        tdRatioMean.append(Math.round(item.mean * 1000000) / 10000);
+        tdRatioMean.append(Math.round(item.normDist.mean * 1000000) / 10000);
         tdRatioMean.append("%");
         tr.appendChild(tdRatioMean);
         const tdRatioStdev = document.createElement("td");
-        tdRatioStdev.append(Math.round(Math.sqrt(item.variance) * 1000000) / 10000);
+        tdRatioStdev.append(Math.round(Math.sqrt(item.normDist.variance) * 1000000) / 10000);
         tdRatioStdev.append("%");
         tr.appendChild(tdRatioStdev);
         const tdUnigramRatio = document.createElement("td");
-        tdUnigramRatio.append(Math.round(item.z * 1000000) / 10000);
+        tdUnigramRatio.append(Math.round(item.ratio * 1000000) / 10000);
         tdUnigramRatio.append("%");
         tr.appendChild(tdUnigramRatio);
         tableUnigrams.appendChild(tr);
