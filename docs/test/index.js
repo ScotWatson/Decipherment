@@ -59,6 +59,12 @@ function start([ Interface ]) {
           layoutId: Interface.LAYOUT_HEADER,
         },
       });
+      const mainDisplay = appLayout.createAttached({
+        area: "body",
+        objectId: Interface.OBJECT_TILES,
+        parameters: {
+        },
+      });
       appLayout.createAttached({
         area: "header",
         objectId: Interface.OBJECT_TEXT,
@@ -66,13 +72,7 @@ function start([ Interface ]) {
           text: "Home",
         },
       }).addClickListener({
-        handler: readFile,
-      });
-      const mainDisplay = appLayout.createAttached({
-        area: "body",
-        objectId: Interface.OBJECT_TILES,
-        parameters: {
-        },
+        handler: mainDisplay.attach(),
       });
       const displayUnigram = appLayout.createDetached({
         area: "body",
