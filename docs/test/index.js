@@ -33,7 +33,7 @@ function start([ Interface ]) {
         text: "Decipherment",
       },
     });
-    mainLayout.createAttached({
+    const mainBody = mainLayout.createAttached({
       area: "body",
       objectId: Interface.OBJECT_TEXT,
       parameters: {
@@ -52,7 +52,7 @@ function start([ Interface ]) {
     const zThreshold = 3;
     async function interpretFile(file) {
       const text = await file.text();
-      const appLayout = BODY.createAttached({
+      const appLayout = mainBody.createAttached({
         objectId: Interface.OBJECT_LAYOUT,
         parameters: {
           layoutId: Interface.LAYOUT_HEADER,
@@ -79,8 +79,9 @@ function start([ Interface ]) {
         parameters: {
         },
       });
-      mainDisplay.addTile({
-        text: "Unigram",
+      mainDisplay.addItem({
+        imgSrc: "",
+        itemName: "Unigram",
       }).addClickListener({
         handler: function () {
           displayUnigram.attach();
@@ -123,8 +124,9 @@ function start([ Interface ]) {
           parameters: {
           },
         });
-        mainDisplay.addTile({
-          text: "Unigram",
+        mainDisplay.addItem({
+          imgSrc: "",
+          itemName: i + "-gram",
         }).addClickListener({
           handler: function () {
             displayNgram.attach();
