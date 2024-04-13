@@ -66,7 +66,7 @@ function start([ Interface ]) {
       addUnigramTable(display, arrUnigramResults);
       const mapDigram = countNgrams(text, 2);
       const mapTrigram = countNgrams(text, 3);
-      const arrDigramResults = getDigramResults(mapDigram, mapUnigram);
+      const arrDigramResults = getNgramResults(2, mapDigram, mapUnigram, mapUnigram);
       console.log(arrDigramResults);
       const arrUnigramPrefixes = getUnigramPrefixes(arrDigramResults);
       addUnigramPrefixTable(arrUnigramPrefixes, display);
@@ -149,6 +149,13 @@ function start([ Interface ]) {
         }
         ++obj.count;
       }
+      for (const obj of mapUnigram.values()) {
+        obj.ratio = obj.count / numSamples;
+        obj.normDist = binomialAsNormDist({
+          numOccurances: obj.count,
+          numSamples: text.length,
+        });
+      }
       return mapUnigram;
     }
     function countNgrams(text, n) {
@@ -164,12 +171,6 @@ function start([ Interface ]) {
         buffer = buffer.substring(1) + char;
         parse();
         ++i;
-      }
-      const numSamples = (text.length - n + 1);
-      for (const obj of mapNgram.values()) {
-        obj.ratio = obj.count / numSamples;
-        obj.mean = (obj.count + 1) / (numSamples + 2);
-        obj.variance = ((obj.count + 1) * (obj.count + 2)) / ((numSamples + 2) * (numSamples + 3)) - (obj.mean * obj.mean);
       }
       return mapNgram;
       function parse() {
@@ -200,53 +201,33 @@ function start([ Interface ]) {
       }
       return arrUnigramResults;
     }
-    function getDigramResults(mapDigram, mapUnigram) {
-      for (const objDigram of mapDigram.values()) {
-        const objChar0 = mapUnigram.get(objDigram.str[0]);
-        const objChar1 = mapUnigram.get(objDigram.str[1]);
-        if ((objChar0.count < threshold) || (objChar1.count < threshold) || (objDigram.count < threshold)) {
-          objDigram.z = 0;
-          continue;
-        }
-        const char0MeanSquared = objChar0.mean * objChar0.mean;
-        const char1MeanSquared = objChar1.mean * objChar1.mean;
-        objDigram.digramIndependentMean = objChar0.mean * objChar1.mean;
-        objDigram.digramIndependentVariance = ((objChar0.variance + char0MeanSquared) * (objChar1.variance + char1MeanSquared)) - (char0MeanSquared * char1MeanSquared);
-        objDigram.differenceMean = objDigram.mean - objDigram.digramIndependentMean;
-        objDigram.differenceVariance = objDigram.variance + objDigram.digramIndependentVariance;
-        objDigram.z = objDigram.differenceMean / objDigram.differenceVariance;
-      }
-      const arrDigramResults = [];
-      for (const objDigram of mapDigram.values()) {
-        if (objDigram.z > zThreshold) {
-          arrDigramResults.push(objDigram);
-        }
-      }
-      return arrDigramResults;
+    function binomialAsNormDist({
+      numOccurances,
+      numSamples,
+    }) {
+      const mean = (numOccurances + 1) / (numSamples + 2);
+      return {
+        mean: mean,
+        variance: ((numOccurances + 1) * (numOccurances + 2)) / ((numSamples + 2) * (numSamples + 3)) - (mean * mean),
+      };
     }
-    function getTrigramResults(mapTrigram, mapDigram, mapUnigram) {
-      for (const objTrigram of mapTrigram.values()) {
-        const objPrefix = mapDigram.get(objTrigram.str[0] + objTrigram.str[1]);
-        const objSuffix = mapUnigram.get(objTrigram.str[2]);
-        if ((objPrefix.count < threshold) || (objSuffix.count < threshold) || (objTrigram.count < threshold)) {
-          objTrigram.z = 0;
-          continue;
-        }
-        const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
-        const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
-        const trigramIndependentMean = objPrefix.mean * objSuffix.mean;
-        const trigramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
-        const differenceMean = objTrigram.mean - trigramIndependentMean;
-        const differenceVariance = objTrigram.variance + trigramIndependentVariance;
-        objTrigram.z = differenceMean / differenceVariance;
-      }
-      const arrTrigramResults = [];
-      for (const objTrigram of mapTrigram.values()) {
-        if (objTrigram.z > zThreshold) {
-          arrTrigramResults.push(objTrigram);
-        }
-      }
-      return arrTrigramResults;
+    function normDistProduct({
+      normDist1,
+      normDist2,
+    }) {
+      const normDist1MeanSquared = normDist1.mean * normDist1.mean;
+      const normDist2MeanSquared = normDist2.mean * normDist2.mean;
+      return {
+        mean: normDist1.mean * normDist2.mean,
+        variance: ((normDist1.variance + normDist1MeanSquared) * (objSuffix.variance + normDist2MeanSquared)) - (normDist1MeanSquared * normDist2MeanSquared);
+      };
+    }
+    function normDistDifference({
+      normDist1,
+      normDist2,
+    }) {
+      mean: normDist1.mean - normDist2.mean,
+      variance: normDist1.variance + normDist2.variance,
     }
     function getNgramResults(n, mapFullGram, mapPrefixGram, mapUnigram) {
       for (const objFull of mapFullGram.values()) {
@@ -264,13 +245,16 @@ function start([ Interface ]) {
           objFull.z = 0;
           continue;
         }
-        const prefixMeanSquared = objPrefix.mean * objPrefix.mean;
-        const suffixMeanSquared = objSuffix.mean * objSuffix.mean;
-        objFull.fullGramIndependentMean = objPrefix.mean * objSuffix.mean;
-        objFull.fullGramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
-        objFull.differenceMean = objFull.mean - objFull.fullGramIndependentMean;
-        objFull.differenceVariance = objFull.variance + objFull.fullGramIndependentVariance;
-        objFull.z = objFull.differenceMean / objFull.differenceVariance;
+        const distSuffixGivenPrefix = binomialAsNormDist({
+          numOccurances: objDigram.count,
+          numSamples: objPrefix.count,
+        });
+        const distSuffix = objSuffix.normDist;
+        const distDifference = normDistDifference({
+          normDist1: distSuffixGivenPrefix,
+          normDist2: distSuffix,
+        });
+        objFull.z = distDifference.mean / Math.sqrt(distDifference.variance);
       }
       const arrResults = [];
       for (const objFull of mapFullGram.values()) {
