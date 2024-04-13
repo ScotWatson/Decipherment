@@ -339,6 +339,7 @@ function start([ Interface ]) {
       trUnigramHeader.appendChild(thUnigramRatio);
       tableUnigrams.appendChild(trUnigramHeader);
       for (const item of arrUnigramResults) {
+        console.log(item);
         const tr = document.createElement("tr");
         const tdUnigram = document.createElement("td");
         tdUnigram.append(strPresent(item.str));
@@ -353,6 +354,7 @@ function start([ Interface ]) {
         tr.appendChild(tdRatioStdev);
         const tdUnigramRatio = document.createElement("td");
         tdUnigramRatio.append(Math.round(item.z * 1000000) / 10000);
+        tdUnigramRatio.append("%");
         tr.appendChild(tdUnigramRatio);
         tableUnigrams.appendChild(tr);
       }
