@@ -80,7 +80,7 @@ function start([ Interface ]) {
       const arrResultArrays = [null, arrUnigramResults, arrDigramResults];
       let i = 3;
       console.log("Counting N-grams");
-      while (arrMapGrams[i].size !== 0) {
+      while (arrMapGrams[i - 1].size !== 0) {
         console.log(i);
         arrMapGrams[i] = countNgrams(text, i);
         removeSubsequence(arrMapGrams[i], arrMapGrams[i - 1]);
@@ -362,9 +362,9 @@ function start([ Interface ]) {
         const tdNgram = document.createElement("td");
         tdNgram.append(strPresent(item.str));
         tr.appendChild(tdNgram);
-        const tdNgramRatio = document.createElement("td");
-        tdNgramRatio.append(Math.round(item.z * 100) / 100);
-        tr.appendChild(tdNgramRatio);
+        const tdNgramZ = document.createElement("td");
+        tdNgramZ.append(Math.round(item.z * 100) / 100);
+        tr.appendChild(tdNgramZ);
         tableNgrams.appendChild(tr);
       }
       display.appendChild(tableNgrams);
