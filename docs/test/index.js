@@ -270,7 +270,7 @@ function start([ Interface ]) {
         objFull.fullGramIndependentVariance = ((objPrefix.variance + prefixMeanSquared) * (objSuffix.variance + suffixMeanSquared)) - (suffixMeanSquared * suffixMeanSquared);
         objFull.differenceMean = objFull.mean - objFull.fullGramIndependentMean;
         objFull.differenceVariance = objFull.variance + objFull.fullGramIndependentVariance;
-        objFull.z = differenceMean / differenceVariance;
+        objFull.z = objFull.differenceMean / objFull.differenceVariance;
       }
       const arrResults = [];
       for (const objFull of mapFullGram.values()) {
