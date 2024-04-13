@@ -60,7 +60,7 @@ function start([ Interface ]) {
         },
       });
       appLayout.createAttached({
-        area: "body",
+        area: "header",
         objectId: Interface.OBJECT_TEXT,
         parameters: {
           text: "Home",
