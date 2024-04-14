@@ -168,6 +168,7 @@ function start([ Interface ]) {
           span.style.backgroundColor = "white";
           span.style.color = "black";
         }
+        pTokenized.append(span);
         ++i;
       }
       console.log("Tokens Displayed");
