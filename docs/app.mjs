@@ -19,6 +19,7 @@ function openFileDialog() {
 
 const btnOpen = document.createElement("button");
 btnOpen.addEventListener("click", readFile);
+document.appendChild(btnOpen);
 
 async function readFile() {
   const file = await openFileDialog();
