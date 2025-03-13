@@ -11,13 +11,14 @@ function openFileDialog() {
     input.style.display = "none";
     input.addEventListener("change", (evt) => {
       resolve(input.files[0]);
+      input.remove();
     });
     input.click();
-    input.remove();
   });
 }
 
 const btnOpen = document.createElement("button");
+btnOpen.append("Open File");
 btnOpen.addEventListener("click", readFile);
 document.body.appendChild(btnOpen);
 
