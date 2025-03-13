@@ -20,7 +20,7 @@ function openFileDialog() {
 const btnOpen = document.createElement("button");
 btnOpen.addEventListener("click", readFile);
 
-async readFile() {
+async function readFile() {
   const file = await openFileDialog();
   const contents = await file.text();
   const unigrams = new Map();
