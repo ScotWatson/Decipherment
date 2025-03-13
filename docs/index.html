@@ -3,26 +3,23 @@
   <head>
     <meta charset="utf-8">
     <!--
-(c) 2024 Scot Watson  All Rights Reserved
+(c) 2025 Scot Watson  All Rights Reserved
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     -->
-    <title>Decipherment</title>
-    <script src="https://scotwatson.github.io/WebInterface/init.js"></script>
-    <script>
-const selfURL = new URL(window.location);
-const pathSegments = selfURL.pathname.split("/");
-init({
-  latestVersion: "20240410",
-  siteURI: function () {
-    return selfURL.origin + pathSegments[0] + "/index";
-  },
-});
-    </script>
-    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex, nofollow">
   </head>
   <body>
+    <script type="importmap">
+      {
+        "imports": {
+          "ES2024": "https://scotwatson.github.io/WebCommon/ES2024@20250212.mjs",
+          "WHATWG": "https://scotwatson.github.io/WebCommon/WHATWG@20250212.mjs",
+          "streams": "https://scotwatson.github.io/WebCommon/streams@20250212.mjs"
+        }
+      }
+    </script>
+    <!-- This is the main application code. It will be loaded in parallel with HTML parsing. It is guarenteed to start executing after HTML parsing is complete. -->
+    <script type="module" src="./app.mjs"></script>
+    <!-- This performs code that can only be performed safely before HTML parsing is complete. -->
+    <script id="init" src="https://scotwatson.github.io/WebCommon/window-init@20250212.js"></script>
   </body>
 </html>
