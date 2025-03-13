@@ -13,6 +13,7 @@ function openFileDialog() {
       resolve(input.files[0]);
       input.remove();
     });
+    document.body.appendChild(input);
     input.click();
   });
 }
