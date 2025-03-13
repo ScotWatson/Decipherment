@@ -9,6 +9,7 @@ function openFileDialog() {
   return new Promise((resolve, reject) => {
     const input = document.createElement("input");
     input.style.display = "none";
+    input.type = "file";
     input.addEventListener("change", (evt) => {
       resolve(input.files[0]);
       input.remove();
