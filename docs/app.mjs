@@ -20,7 +20,7 @@ function openFileDialog() {
 const btnOpen = document.createElement("button");
 btnOpen.addEventListener("click", readFile);
 
-(async readFile() => {
+async readFile() {
   const file = await openFileDialog();
   const contents = await file.text();
   const unigrams = new Map();
@@ -36,4 +36,4 @@ btnOpen.addEventListener("click", readFile);
     }
   }
   console.log(Array.from(unigrams.entries()));
-})();
+}
