@@ -49,7 +49,7 @@ async function readFile() {
     const bigram = prevChar + char;
     const record = bigrams.get(bigram);
     if (record) {
-      ++record.instances.push(i - 1);
+      record.instances.push(i - 1);
     } else {
       bigrams.set(bigram, {
         str: bigram,
