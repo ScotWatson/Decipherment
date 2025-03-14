@@ -61,21 +61,21 @@ async function readFile() {
   }
   for (const bigramRecord of bigrams.values()) {
     const bigramCount = bigramRecord.instances.length;
-    const char0Record = unigrams.get(bigramRecord.str[0]);
-    const char1Record = unigrams.get(bigramRecord.str[1]);
-    const bigramPrefixEstimate = bigramRecord.instances.length / char0Record.count;
-    const bigramPrefixVariance = bigramPrefixEstimate * (1 - bigramPrefixEstimate);
-    const bigramSuffixEstimate = bigramRecord.instances.length / char1Record.count;
-    const bigramSuffixVariance = bigramSuffixEstimate * (1 - bigramSuffixEstimate);
-    const prefixEstimate = bigramPrefixEstimate - char0Record.estimate;
-    const prefixVariance = bigramPrefixVariance + char0Record.variance;
-    const prefixStdev = Math.sqrt(prefixVariance);
-    bigramRecord.prefixZ = prefixEstimate / prefixStdev;
-    const suffixEstimate = bigramSuffixEstimate - char0Record.estimate;
-    const suffixVariance = bigramSuffixVariance + char0Record.variance;
-    const suffixStdev = Math.sqrt(suffixVariance);
-    bigramRecord.suffixZ = suffixEstimate / suffixStdev;
+    bigramRecord.char0Record = unigrams.get(bigramRecord.str[0]);
+    bigramRecord.char1Record = unigrams.get(bigramRecord.str[1]);
+    bigramRecord.bigramPrefixEstimate = bigramRecord.instances.length / bigramRecord.char0Record.count;
+    bigramRecord.bigramPrefixVariance = bigramRecord.bigramPrefixEstimate * (1 - bigramRecord.bigramPrefixEstimate);
+    bigramRecord.bigramSuffixEstimate = bigramRecord.instances.length / char1Record.count;
+    bigramRecord.bigramSuffixVariance = bigramRecord.bigramSuffixEstimate * (1 - bigramRecord.bigramSuffixEstimate);
+    bigramRecord.prefixEstimate = bigramRecord.bigramPrefixEstimate - bigramRecord.char0Record.estimate;
+    bigramRecord.prefixVariance = bigramRecord.bigramPrefixVariance + bigramRecord.char0Record.variance;
+    bigramRecord.prefixStdev = Math.sqrt(bigramRecord.prefixVariance);
+    bigramRecord.prefixZ = bigramRecord.prefixEstimate / bigramRecord.prefixStdev;
+    bigramRecord.suffixEstimate = bigramRecord.bigramSuffixEstimate - bigramRecord.char0Record.estimate;
+    bigramRecord.suffixVariance = bigramRecord.bigramSuffixVariance + bigramRecord.char0Record.variance;
+    bigramRecord.suffixStdev = Math.sqrt(bigramRecord.suffixVariance);
+    bigramRecord.suffixZ = bigramRecord.suffixEstimate / bigramRecord.suffixStdev;
   }
-  console.log(Array.from(unigrams.entries()).sort((entry1, entry2) => { return (entry1[1].count < entry2[1].count) ? 1 : -1; }));
-  console.log(Array.from(bigrams.entries()).sort((entry1, entry2) => { return (entry1[1].prefixZ < entry2[1].prefixZ) ? 1 : -1; }));
+  console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
+  console.log(Array.from(bigrams.values()).sort((entry1, entry2) => { return (entry1.prefixZ < entry2.prefixZ) ? 1 : -1; }));
 }
