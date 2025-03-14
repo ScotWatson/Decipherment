@@ -39,7 +39,7 @@ async function readFile() {
       })
     }
   }
-  for (const unigram of unigrams) {
+  for (const unigram of unigrams.values()) {
     unigram.estimate = unigram.count / contents.length;
     unigram.variance = unigram.estimate * (1 - unigram.estimate);
   }
@@ -59,7 +59,7 @@ async function readFile() {
     }
     prevChar = char;
   }
-  for (const bigramRecord of bigrams) {
+  for (const bigramRecord of bigrams.values()) {
     const bigramCount = bigramRecord.instances.length;
     const char0Record = unigrams.get(bigramRecord.str[0]);
     const char1Record = unigrams.get(bigramRecord.str[1]);
