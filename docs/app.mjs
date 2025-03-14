@@ -65,7 +65,7 @@ async function readFile() {
     bigramRecord.char1Record = unigrams.get(bigramRecord.str[1]);
     bigramRecord.bigramPrefixEstimate = bigramRecord.instances.length / bigramRecord.char0Record.count;
     bigramRecord.bigramPrefixVariance = bigramRecord.bigramPrefixEstimate * (1 - bigramRecord.bigramPrefixEstimate);
-    bigramRecord.bigramSuffixEstimate = bigramRecord.instances.length / char1Record.count;
+    bigramRecord.bigramSuffixEstimate = bigramRecord.instances.length / bigramRecord.char1Record.count;
     bigramRecord.bigramSuffixVariance = bigramRecord.bigramSuffixEstimate * (1 - bigramRecord.bigramSuffixEstimate);
     bigramRecord.prefixEstimate = bigramRecord.bigramPrefixEstimate - bigramRecord.char0Record.estimate;
     bigramRecord.prefixVariance = bigramRecord.bigramPrefixVariance + bigramRecord.char0Record.variance;
