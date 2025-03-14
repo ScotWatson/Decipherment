@@ -46,6 +46,7 @@ async function readFile() {
   const bigrams = new Map();
   let prevChar = contents[0];
   for (let i = 1; i < contents.length; ++i) {
+    const char = contents[i];
     const bigram = prevChar + char;
     const record = bigrams.get(bigram);
     if (record) {
