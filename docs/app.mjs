@@ -49,14 +49,18 @@ async function readFile() {
   computeBigramStatistics();
   const vettedBigrams = getVettedNgrams(bigrams);
   // Trigrams
-  const { Ngrams: trigrams, vettedNgrams: vettedTrigrams } = computeNGram(3, bigrams);
+  const trigrams = countNgrams(3);
+  computeStatistics(3, trigrams);
+  const vettedTrigrams = getVettedNgrams(trigrams);
   const vetted2Bigrams = crossvetNgrams(3, vettedBigrams, vettedTrigrams);
   // 4-grams
-  const { Ngrams: n4grams, vettedNgrams: vetted4grams } = computeNGram(4, trigrams);
-  const vettedTrigrams = crossvetNgrams(4, vettedTrigrams, vetted4grams);
+  const n4grams = countNgrams(4);
+  computeStatistics(4, n4grams);
+  const vettedN4grams = getVettedNgrams(n4grams);
+  const vetted2Trigrams = crossvetNgrams(3, vettedTrigrams, vettedN4grams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  console.log(Array.from(vettedBigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
-  console.log(Array.from(vettedTrigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
+  console.log(Array.from(vetted2Bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
+  console.log(Array.from(vetted2Trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
   console.log(Array.from(vetted4grams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
 
   function computeBigramStatistics() {
@@ -77,15 +81,6 @@ async function readFile() {
       bigramRecord.Z1 = bigramRecord.Z;
       bigramRecord.Z2 = bigramRecord.Z;
     }
-  }
-  function computeNGram(N) {
-    const Ngrams = countNgrams(N);
-    computeStatistics(N, Ngrams);
-    const vettedNgrams = getVettedNgrams(Ngrams);
-    return {
-      Ngrams,
-      vettedNgrams,
-    };
   }
   function countNgrams(N) {
     const ngrams = new Map();
