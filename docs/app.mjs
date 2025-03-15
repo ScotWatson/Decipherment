@@ -41,7 +41,7 @@ async function readFile() {
   }
   for (const unigram of unigrams.values()) {
     unigram.estimate = unigram.count / contents.length;
-    unigram.variance = unigram.estimate * (1 - unigram.estimate);
+    unigram.variance = unigram.estimate * (1 - unigram.estimate) / contents.length;
   }
   const bigrams = new Map();
   let prevChar = contents[0];
@@ -64,9 +64,9 @@ async function readFile() {
     bigramRecord.char0Record = unigrams.get(bigramRecord.str[0]);
     bigramRecord.char1Record = unigrams.get(bigramRecord.str[1]);
     bigramRecord.bigramPrefixEstimate = bigramRecord.instances.length / bigramRecord.char0Record.count;
-    bigramRecord.bigramPrefixVariance = bigramRecord.bigramPrefixEstimate * (1 - bigramRecord.bigramPrefixEstimate);
+    bigramRecord.bigramPrefixVariance = bigramRecord.bigramPrefixEstimate * (1 - bigramRecord.bigramPrefixEstimate) / bigramRecord.char0Record.count;
     bigramRecord.bigramSuffixEstimate = bigramRecord.instances.length / bigramRecord.char1Record.count;
-    bigramRecord.bigramSuffixVariance = bigramRecord.bigramSuffixEstimate * (1 - bigramRecord.bigramSuffixEstimate);
+    bigramRecord.bigramSuffixVariance = bigramRecord.bigramSuffixEstimate * (1 - bigramRecord.bigramSuffixEstimate) / bigramRecord.char0Record.count;
     bigramRecord.prefixEstimate = bigramRecord.bigramPrefixEstimate - bigramRecord.char0Record.estimate;
     bigramRecord.prefixVariance = bigramRecord.bigramPrefixVariance + bigramRecord.char0Record.variance;
     bigramRecord.prefixStdev = Math.sqrt(bigramRecord.prefixVariance);
