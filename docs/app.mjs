@@ -96,8 +96,8 @@ async function readFile() {
   for (const trigramRecord of trigrams.values()) {
     const trigramCount = trigramRecord.instances.length;
     const char0Record = unigrams.get(trigramRecord.str[0]);
-    const prefixRecord = bigrams.get(trigramRecord.slice(1));
-    const suffixRecord = bigrams.get(trigramRecord.slice(0, 2));
+    const prefixRecord = bigrams.get(trigramRecord.str.slice(1));
+    const suffixRecord = bigrams.get(trigramRecord.str.slice(0, 2));
     const charNRecord = unigrams.get(trigramRecord.str[2]);
     trigramRecord.estimate = trigramRecord.instances.length / (contents.length - 2);
     trigramRecord.variance = trigramRecord.estimate * (1 - trigramRecord.estimate) / (contents.length - 2);
