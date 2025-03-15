@@ -101,11 +101,11 @@ async function readFile() {
     }
     return ngrams;
   }
-  function computeStatistics(N, Ngrams, subNgrams) {
-    for (const ngramRecord of Ngrams.values()) {
-      const ngramCount = NgramRecord.instances.size;
-      ngramRecord.estimate = trigramRecord.instances.size / (contents.length - 1);
-      ngramRecord.variance = trigramRecord.estimate * (1 - trigramRecord.estimate) / (contents.length - 1);
+  function computeStatistics(N, ngrams, subNgrams) {
+    for (const ngramRecord of ngrams.values()) {
+      const ngramCount = ngramRecord.instances.size;
+      ngramRecord.estimate = ngramRecord.instances.size / (contents.length - 1);
+      ngramRecord.variance = ngramRecord.estimate * (1 - ngramRecord.estimate) / (contents.length - 1);
       let ngramIndependentEstimate = 1;
       let ngramIndependentVariancePart1 = 1; // variance - estimate squared
       let ngramIndependentVariancePart2 = 1; // estimate squared
