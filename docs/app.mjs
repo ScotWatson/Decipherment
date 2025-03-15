@@ -99,16 +99,16 @@ async function readFile() {
     for (let i = 0; i < 2; ++i) {
       charRecords[i] = unigrams.get(trigramRecord.str[i]);
     }
-    let trigramIndependantEstimate = 1;
-    let trigramIndependantVariance1 = 1; // variance - estimate squared
-    let trigramIndependantVariance2 = 1; // estimate squared
+    let trigramIndependentEstimate = 1;
+    let trigramIndependentVariance1 = 1; // variance - estimate squared
+    let trigramIndependentVariance2 = 1; // estimate squared
     for (let i = 0; i < 2; ++i) {
-      trigramIndependantEstimate *= charRecords[i].estimate;
+      trigramIndependentEstimate *= charRecords[i].estimate;
       const estimateSquared = charRecords[i].estimate * charRecords[i].estimate;
-      trigramIndependantVariance1 *= (charRecords[i].variance + estimateSquared);
-      trigramIndependantVariance2 *= charRecords[i].variance;
+      trigramIndependentVariance1 *= (charRecords[i].variance + estimateSquared);
+      trigramIndependentVariance2 *= charRecords[i].variance;
     }
-    const trigramIndependantVariance = trigramIndependantVariance1 - trigramIndependantVariance2;
+    const trigramIndependentVariance = trigramIndependentVariance1 - trigramIndependentVariance2;
     const trigramDifferenceEstimate = trigramRecord.estimate - trigramIndependentEstimate;
     const trigramDifferenceVariance = trigramRecord.variance + trigramIndependentVariance;
     const trigramDifferenceStdev = Math.sqrt(trigramDifferenceVariance);
