@@ -116,11 +116,11 @@ async function readFile() {
     const char0Record = unigrams.get(trigramRecord.str[0]);
     const prefixRecord = bigrams.get(trigramRecord.str.slice(1));
     const suffixRecord = bigrams.get(trigramRecord.str.slice(0, 2));
-    const charNRecord = unigrams.get(trigramRecord.str[1]);
+    const charNRecord = unigrams.get(trigramRecord.str[2]);
     const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
     const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
     const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
-    const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
+    const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
     const trigramIndependentEstimate1 = char0Record.estimate * char1Record.estimate;
     const trigramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
     const trigramDifferenceEstimate1 = trigramRecord.estimate - trigramIndependentEstimate1;
