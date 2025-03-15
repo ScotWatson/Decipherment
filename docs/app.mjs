@@ -121,13 +121,13 @@ async function readFile() {
     const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
     const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
     const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
-    const trigramIndependentEstimate1 = char0Record.estimate * charNRecord.estimate;
+    const trigramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
     const trigramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
     const trigramDifferenceEstimate1 = trigramRecord.estimate - trigramIndependentEstimate1;
     const trigramDifferenceVariance1 = trigramRecord.variance + trigramIndependentVariance1;
     const trigramDifferenceStdev1 = Math.sqrt(trigramDifferenceVariance1);
     trigramRecord.trigramZ1 = trigramDifferenceEstimate1 / trigramDifferenceStdev1;
-    const trigramIndependentEstimate2 = char0Record.estimate * char1Record.estimate;
+    const trigramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
     const trigramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
     const trigramDifferenceEstimate2 = trigramRecord.estimate - trigramIndependentEstimate2;
     const trigramDifferenceVariance2 = trigramRecord.variance + trigramIndependentVariance2;
