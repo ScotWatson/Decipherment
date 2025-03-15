@@ -63,10 +63,10 @@ async function readFile() {
   }
   for (const bigramRecord of bigrams.values()) {
     const bigramCount = bigramRecord.instances.length;
-    const char0Record = unigrams.get(bigramRecord.str[0]);
-    const char1Record = unigrams.get(bigramRecord.str[1]);
     bigramRecord.estimate = bigramRecord.instances.length / (contents.length - 1);
     bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
+    const char0Record = unigrams.get(bigramRecord.str[0]);
+    const char1Record = unigrams.get(bigramRecord.str[1]);
     const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
     const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
     const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
@@ -112,8 +112,30 @@ async function readFile() {
     const trigramDifferenceVariance = trigramRecord.variance + trigramIndependentVariance;
     const trigramDifferenceStdev = Math.sqrt(trigramDifferenceVariance);
     trigramRecord.trigramZ = trigramDifferenceEstimate / trigramDifferenceStdev;
+
+    const char0Record = unigrams.get(trigramRecord.str[0]);
+    const prefixRecord = bigrams.get(trigramRecord.str.slice(1));
+    const suffixRecord = bigrams.get(trigramRecord.str.slice(0, 2));
+    const charNRecord = unigrams.get(trigramRecord.str[1]);
+    const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
+    const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
+    const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
+    const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
+    const trigramIndependentEstimate1 = char0Record.estimate * char1Record.estimate;
+    const trigramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
+    const trigramDifferenceEstimate1 = trigramRecord.estimate - trigramIndependentEstimate1;
+    const trigramDifferenceVariance1 = trigramRecord.variance + trigramIndependentVariance1;
+    const trigramDifferenceStdev1 = Math.sqrt(trigramDifferenceVariance1);
+    trigramRecord.trigramZ1 = trigramDifferenceEstimate1 / trigramDifferenceStdev1;
+    const trigramIndependentEstimate2 = char0Record.estimate * char1Record.estimate;
+    const trigramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
+    const trigramDifferenceEstimate2 = trigramRecord.estimate - trigramIndependentEstimate2;
+    const trigramDifferenceVariance2 = trigramRecord.variance + trigramIndependentVariance2;
+    const trigramDifferenceStdev2 = Math.sqrt(trigramDifferenceVariance2);
+    trigramRecord.trigramZ2 = trigramDifferenceEstimate2 / trigramDifferenceStdev2;
   }
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
   console.log(Array.from(bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
-  console.log(Array.from(trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
+  console.log(Array.from(trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ1 < entry2.trigramZ1) ? 1 : -1; }));
+  console.log(Array.from(trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ2 < entry2.trigramZ2) ? 1 : -1; }));
 }
