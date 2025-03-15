@@ -105,10 +105,10 @@ async function readFile() {
     for (let i = 0; i < 2; ++i) {
       trigramIndependantEstimate *= charRecords[i].estimate;
       const estimateSquared = charRecords[i].estimate * charRecords[i].estimate;
-      trigramIndependanceVariance1 *= (charRecords[i].variance + estimateSquared);
-      trigramIndependanceVariance2 *= charRecords[i].variance;
+      trigramIndependantVariance1 *= (charRecords[i].variance + estimateSquared);
+      trigramIndependantVariance2 *= charRecords[i].variance;
     }
-    const trigramIndependantVariance = trigramIndependanceVariance1 - trigramIndependanceVariance2;
+    const trigramIndependantVariance = trigramIndependantVariance1 - trigramIndependantVariance2;
     const trigramDifferenceEstimate = trigramRecord.estimate - trigramIndependentEstimate;
     const trigramDifferenceVariance = trigramRecord.variance + trigramIndependentVariance;
     const trigramDifferenceStdev = Math.sqrt(trigramDifferenceVariance);
