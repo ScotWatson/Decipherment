@@ -36,7 +36,7 @@ async function readFile() {
     } else {
       unigrams.set(char, {
         char,
-        count: 0,
+        count: 1,
       })
     }
   }
@@ -45,97 +45,144 @@ async function readFile() {
     unigram.variance = unigram.estimate * (1 - unigram.estimate) / contents.length;
   }
   // Bigrams
-  const bigrams = new Map();
-  let prevChar = contents[0];
-  for (let i = 1; i < contents.length; ++i) {
-    const char = contents[i];
-    const bigram = prevChar + char;
-    const record = bigrams.get(bigram);
-    if (record) {
-      record.instances.push(i - 1);
-    } else {
-      bigrams.set(bigram, {
-        str: bigram,
-        instances: [],
-      });
-    }
-    prevChar = char;
-  }
-  for (const bigramRecord of bigrams.values()) {
-    const bigramCount = bigramRecord.instances.length;
-    bigramRecord.estimate = bigramRecord.instances.length / (contents.length - 1);
-    bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
-    const char0Record = unigrams.get(bigramRecord.str[0]);
-    const char1Record = unigrams.get(bigramRecord.str[1]);
-    const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
-    const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
-    const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
-    const bigramIndependentVariance = (char0Record.variance + char0EstimateSquared) * (char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
-    const bigramDifferenceEstimate = bigramRecord.estimate - bigramIndependentEstimate;
-    const bigramDifferenceVariance = bigramRecord.variance + bigramIndependentVariance;
-    const bigramDifferenceStdev = Math.sqrt(bigramDifferenceVariance);
-    bigramRecord.bigramZ = bigramDifferenceEstimate / bigramDifferenceStdev;
-  }
+  const bigrams = countNgrams(2);
+  computeBigramStatistics();
+  const vettedBigrams = getVettedNgrams(bigrams);
   // Trigrams
-  const trigrams = new Map();
-  let prevChars = contents.slice(0, 2);
-  for (let i = 2; i < contents.length; ++i) {
-    const char = contents[i];
-    const trigram = prevChars + char;
-    const record = trigrams.get(trigram);
-    if (record) {
-      record.instances.push(i - 1);
-    } else {
-      trigrams.set(trigram, {
-        str: trigram,
-        instances: [],
-      });
-    }
-    prevChars = prevChars.slice(1) + char;
-  }
-  for (const trigramRecord of trigrams.values()) {
-    const trigramCount = trigramRecord.instances.length;
-    trigramRecord.estimate = trigramRecord.instances.length / (contents.length - 1);
-    trigramRecord.variance = trigramRecord.estimate * (1 - trigramRecord.estimate) / (contents.length - 1);
-    let trigramIndependentEstimate = 1;
-    let trigramIndependentVariancePart1 = 1; // variance - estimate squared
-    let trigramIndependentVariancePart2 = 1; // estimate squared
-    for (let i = 0; i < 3; ++i) {
-      const charRecord = unigrams.get(trigramRecord.str[i]);
-      trigramIndependentEstimate *= charRecord.estimate;
-      const estimateSquared = charRecord.estimate * charRecord.estimate;
-      trigramIndependentVariancePart1 *= (charRecord.variance + estimateSquared);
-      trigramIndependentVariancePart2 *= charRecord.variance;
-    }
-    const trigramIndependentVariance = trigramIndependentVariancePart1 - trigramIndependentVariancePart2;
-    const trigramDifferenceEstimate = trigramRecord.estimate - trigramIndependentEstimate;
-    const trigramDifferenceVariance = trigramRecord.variance + trigramIndependentVariance;
-    const trigramDifferenceStdev = Math.sqrt(trigramDifferenceVariance);
-    trigramRecord.trigramZ = trigramDifferenceEstimate / trigramDifferenceStdev;
-
-    const char0Record = unigrams.get(trigramRecord.str[0]);
-    const prefixRecord = bigrams.get(trigramRecord.str.slice(1));
-    const suffixRecord = bigrams.get(trigramRecord.str.slice(0, 2));
-    const charNRecord = unigrams.get(trigramRecord.str[2]);
-    const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
-    const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
-    const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
-    const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
-    const trigramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
-    const trigramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
-    const trigramDifferenceEstimate1 = trigramRecord.estimate - trigramIndependentEstimate1;
-    const trigramDifferenceVariance1 = trigramRecord.variance + trigramIndependentVariance1;
-    const trigramDifferenceStdev1 = Math.sqrt(trigramDifferenceVariance1);
-    trigramRecord.trigramZ1 = trigramDifferenceEstimate1 / trigramDifferenceStdev1;
-    const trigramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
-    const trigramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
-    const trigramDifferenceEstimate2 = trigramRecord.estimate - trigramIndependentEstimate2;
-    const trigramDifferenceVariance2 = trigramRecord.variance + trigramIndependentVariance2;
-    const trigramDifferenceStdev2 = Math.sqrt(trigramDifferenceVariance2);
-    trigramRecord.trigramZ2 = trigramDifferenceEstimate2 / trigramDifferenceStdev2;
-  }
+  const { Ngrams: trigrams, vettedNgrams: vettedTrigrams } = computeNGram(3, bigrams);
+  const vetted2Bigrams = crossvetNgrams(3, vettedBigrams, vettedTrigrams);
+  // 4-grams
+  const { Ngrams: n4grams, vettedNgrams: vetted4grams } = computeNGram(4, trigrams);
+  const vettedTrigrams = crossvetNgrams(4, vettedTrigrams, vetted4grams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  console.log(Array.from(bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
-  console.log(Array.from(trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ1 < entry2.trigramZ1) ? 1 : -1; }));
-  console.log(Array.from(trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ2 < entry2.trigramZ2) ? 1 : -1; }));
+  console.log(Array.from(vettedBigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
+  console.log(Array.from(vettedTrigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
+  console.log(Array.from(vetted4grams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
+
+  function computeBigramStatistics() {
+    for (const bigramRecord of bigrams.values()) {
+      const bigramCount = bigramRecord.instances.size;
+      bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
+      bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
+      const char0Record = unigrams.get(bigramRecord.str[0]);
+      const char1Record = unigrams.get(bigramRecord.str[1]);
+      const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
+      const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
+      const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
+      const bigramIndependentVariance = (char0Record.variance + char0EstimateSquared) * (char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
+      const bigramDifferenceEstimate = bigramRecord.estimate - bigramIndependentEstimate;
+      const bigramDifferenceVariance = bigramRecord.variance + bigramIndependentVariance;
+      const bigramDifferenceStdev = Math.sqrt(bigramDifferenceVariance);
+      bigramRecord.Z = bigramDifferenceEstimate / bigramDifferenceStdev;
+      bigramRecord.Z1 = bigramRecord.Z;
+      bigramRecord.Z2 = bigramRecord.Z;
+    }
+  }
+  function computeNGram(N) {
+    const Ngrams = countNgrams(N);
+    computeStatistics(N, Ngrams);
+    const vettedNgrams = getVettedNgrams(Ngrams);
+    return {
+      Ngrams,
+      vettedNgrams,
+    };
+  }
+  function countNgrams(N) {
+    const ngrams = new Map();
+    let prevChars = contents.slice(0, N - 1);
+    for (let i = N; i < contents.length; ++i) {
+      const char = contents[i];
+      const ngram = prevChars + char;
+      const record = ngrams.get(ngram);
+      if (record) {
+        record.instances.add(i - N + 1);
+      } else {
+        ngrams.set(ngram, {
+          str: ngram,
+          instances: new Set([ i - N + 1 ]),
+        });
+      }
+      prevChars = prevChars.slice(1) + char;
+    }
+    return ngrams;
+  }
+  function computeStatistics(N, Ngrams, subNgrams) {
+    for (const ngramRecord of Ngrams.values()) {
+      const ngramCount = NgramRecord.instances.size;
+      ngramRecord.estimate = trigramRecord.instances.size / (contents.length - 1);
+      ngramRecord.variance = trigramRecord.estimate * (1 - trigramRecord.estimate) / (contents.length - 1);
+      let ngramIndependentEstimate = 1;
+      let ngramIndependentVariancePart1 = 1; // variance - estimate squared
+      let ngramIndependentVariancePart2 = 1; // estimate squared
+      for (let i = 0; i < N; ++i) {
+        const charRecord = unigrams.get(ngramRecord.str[i]);
+        ngramIndependentEstimate *= charRecord.estimate;
+        const estimateSquared = charRecord.estimate * charRecord.estimate;
+        ngramIndependentVariancePart1 *= (charRecord.variance + estimateSquared);
+        ngramIndependentVariancePart2 *= charRecord.variance;
+      }
+      const ngramIndependentVariance = ngramIndependentVariancePart1 - ngramIndependentVariancePart2;
+      const ngramDifferenceEstimate = ngramRecord.estimate - ngramIndependentEstimate;
+      const ngramDifferenceVariance = ngramRecord.variance + ngramIndependentVariance;
+      const ngramDifferenceStdev = Math.sqrt(ngramDifferenceVariance);
+      ngramRecord.Z = ngramDifferenceEstimate / ngramDifferenceStdev;
+      const char0Record = unigrams.get(ngramRecord.str[0]);
+      const prefixRecord = subNgrams.get(ngramRecord.str.slice(1));
+      const suffixRecord = subNgrams.get(ngramRecord.str.slice(0, N - 1));
+      const charNRecord = unigrams.get(ngramRecord.str[N - 1]);
+      const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
+      const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
+      const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
+      const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
+      const ngramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
+      const ngramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
+      const ngramDifferenceEstimate1 = ngramRecord.estimate - ngramIndependentEstimate1;
+      const ngramDifferenceVariance1 = ngramRecord.variance + ngramIndependentVariance1;
+      const ngramDifferenceStdev1 = Math.sqrt(ngramDifferenceVariance1);
+      ngramRecord.Z1 = ngramDifferenceEstimate1 / ngramDifferenceStdev1;
+      const ngramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
+      const ngramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
+      const ngramDifferenceEstimate2 = ngramRecord.estimate - ngramIndependentEstimate2;
+      const ngramDifferenceVariance2 = ngramRecord.variance + ngramIndependentVariance2;
+      const ngramDifferenceStdev2 = Math.sqrt(ngramDifferenceVariance2);
+      ngramRecord.Z2 = ngramDifferenceEstimate2 / ngramDifferenceStdev2;
+    }
+  }
+  function getVettedNgrams(Ngrams) {
+    const vettedNgrams = new Map();
+    for (const NgramRecord of Ngrams.values()) {
+      if ((NgramRecord.Z1 > 3) || (NgramRecord.Z2 > 3)) {
+        vettedNgrams.set(NgramRecord.str, {
+          str: NgramRecord.str,
+          instances: new Set(NgramRecord.instances),
+          estimate: NgramRecord.estimate,
+          variance: NgramRecord.variance,
+          Z: NgramRecord.Z,
+          Z1: NgramRecord.Z1,
+          Z2: NgramRecord.Z2,
+        });
+      }
+    }
+  }
+  function crossvetNgrams(N, subNgrams, Ngrams) {
+    const vettedSubNgrams = new Map();
+    for (const ngramRecord of Ngrams.values()) {
+      const prefix = ngramRecord.str.slice(0, N - 1);
+      if (prefix) {
+        const prefixRecord = subNgrams.get(prefix);
+        for (const instance of ngramRecord.instances) {
+          prefixRecord.instances.remove(instance);
+        }
+      }
+      const suffix = ngramRecord.str.slice(1);
+      if (suffix) {
+        const suffixRecord = subNgrams.get(suffix);
+        for (const instance of ngramRecord.instances) {
+          suffixRecord.instances.remove(instance + 1);
+        }
+      }
+    }
+    computeStatistics(2, bigrams);
+    return getVettedNgrams(bigrams);
+  }
 }
