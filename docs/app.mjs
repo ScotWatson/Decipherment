@@ -76,8 +76,8 @@ async function readFile() {
     bigramRecord.suffixStdev = Math.sqrt(bigramRecord.suffixVariance);
     bigramRecord.suffixZ = bigramRecord.suffixEstimate / bigramRecord.suffixStdev;
 
-    bigramRecord.bigramEstimate = bigramRecord.instances.length / (content.length - 1);
-    bigramRecord.bigramVariance = bigramRecord.bigramEstimate * (1 - bigramRecord.bigramEstimate) / (content.length - 1);
+    bigramRecord.bigramEstimate = bigramRecord.instances.length / (contents.length - 1);
+    bigramRecord.bigramVariance = bigramRecord.bigramEstimate * (1 - bigramRecord.bigramEstimate) / (contents.length - 1);
     const char0EstimateSquared = bigramRecord.char0Record.estimate * bigramRecord.char0Record.estimate;
     const char1EstimateSquared = bigramRecord.char1Record.estimate * bigramRecord.char1Record.estimate;
     bigramRecord.bigramIndependentEstimate = bigramRecord.char0Record.estimate * bigramRecord.char1Record.estimate;
