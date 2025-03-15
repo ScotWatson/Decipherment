@@ -95,6 +95,8 @@ async function readFile() {
   }
   for (const trigramRecord of trigrams.values()) {
     const trigramCount = trigramRecord.instances.length;
+    trigramRecord.estimate = trigramRecord.instances.length / (contents.length - 1);
+    trigramRecord.variance = trigramRecord.estimate * (1 - trigramRecord.estimate) / (contents.length - 1);
     let trigramIndependentEstimate = 1;
     let trigramIndependentVariance1 = 1; // variance - estimate squared
     let trigramIndependentVariance2 = 1; // estimate squared
