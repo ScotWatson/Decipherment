@@ -75,7 +75,18 @@ async function readFile() {
     bigramRecord.suffixVariance = bigramRecord.bigramSuffixVariance + bigramRecord.char0Record.variance;
     bigramRecord.suffixStdev = Math.sqrt(bigramRecord.suffixVariance);
     bigramRecord.suffixZ = bigramRecord.suffixEstimate / bigramRecord.suffixStdev;
+
+    bigramRecord.bigramEstimate = bigramRecord.instances.length / (content.length - 1);
+    bigramRecord.bigramVariance = bigramRecord.bigramEstimate * (1 - bigramRecord.bigramEstimate) / (content.length - 1);
+    const char0EstimateSquared = bigramRecord.char0Record.estimate * bigramRecord.char0Record.estimate;
+    const char1EstimateSquared = bigramRecord.char1Record.estimate * bigramRecord.char1Record.estimate;
+    bigramRecord.bigramIndependentEstimate = bigramRecord.char0Record.estimate * bigramRecord.char1Record.estimate;
+    bigramRecord.bigramIndependentVariance = (bigramRecord.char0Record.variance + char0EstimateSquared) * (bigramRecord.char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
+    bigramRecord.bigramDifferenceEstimate = bigramRecord.bigramEstimate - bigramRecord.bigramIndependentEstimate;
+    bigramRecord.bigramDifferenceVariance = bigramRecord.bigramVariance + bigramRecord.bigramIndependentVariance;
+    bigramRecord.bigramDifferenceStdev = Math.sqrt(bigramRecord.bigramDifferenceVariance);
+    bigramRecord.bigramDifferenceZ = bigramRecord.bigramDifferenceEstimate / bigramRecord.bigramDifferenceStdev;
   }
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  console.log(Array.from(bigrams.values()).sort((entry1, entry2) => { return (entry1.prefixZ < entry2.prefixZ) ? 1 : -1; }));
+  console.log(Array.from(bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramDifferenceZ < entry2.bigramDifferenceZ) ? 1 : -1; }));
 }
