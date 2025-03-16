@@ -44,15 +44,15 @@ async function readFile() {
       })
     }
   }
-  for (const unigram of unigrams.values()) {
-    const p = unigram.count / contents.length;
+  for (const unigramRecord of unigrams.values()) {
+    const p = unigramRecord.count / contents.length;
     if (contents.length * p / (1 - p) <= reliableZSquared) {
-      ngramRecord.estimate = Math.NaN;
-      ngramRecord.variance = Math.NaN;
+      unigramRecord.estimate = Math.NaN;
+      unigramRecord.variance = Math.NaN;
       continue;
     }
-    unigram.estimate = p;
-    unigram.variance = unigram.estimate * (1 - unigram.estimate) / contents.length;
+    unigramRecord.estimate = p;
+    unigramRecord.variance = unigramRecord.estimate * (1 - unigramRecord.estimate) / contents.length;
   }
   // Bigrams
   const bigrams = countNgrams(2);
