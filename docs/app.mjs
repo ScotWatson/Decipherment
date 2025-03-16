@@ -164,21 +164,21 @@ async function readFile() {
     const vettedSubNgrams = new Map();
     for (const ngramRecord of Ngrams.values()) {
       const prefix = ngramRecord.str.slice(0, N - 1);
-      if (prefix) {
-        const prefixRecord = subNgrams.get(prefix);
+      const prefixRecord = subNgrams.get(prefix);
+      if (prefixRecord) {
         for (const instance of ngramRecord.instances) {
           prefixRecord.instances.delete(instance);
         }
       }
       const suffix = ngramRecord.str.slice(1);
-      if (suffix) {
-        const suffixRecord = subNgrams.get(suffix);
+      const suffixRecord = subNgrams.get(suffix);
+      if (suffixRecord) {
         for (const instance of ngramRecord.instances) {
           suffixRecord.instances.delete(instance + 1);
         }
       }
     }
-    computeStatistics(2, bigrams);
-    return getVettedNgrams(bigrams);
+    computeStatistics(N - 1, subNgrams);
+    return getVettedNgrams(subNgrams);
   }
 }
