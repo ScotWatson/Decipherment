@@ -101,7 +101,7 @@ async function readFile() {
     for (const bigramRecord of bigrams.values()) {
       const bigramCount = bigramRecord.instances.size;
       const p = bigramRecord.instances.size / (contents.length - 1);
-      if ((contents.length - N + 1) * p / (1 - p) <= reliableZSquared) {
+      if ((contents.length - 1) * p / (1 - p) <= reliableZSquared) {
         bigramRecord.estimate = Math.NaN;
         bigramRecord.variance = Math.NaN;
         bigramRecord.Z = Math.NaN;
