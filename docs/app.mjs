@@ -47,8 +47,8 @@ async function readFile() {
   for (const unigramRecord of unigrams.values()) {
     const p = unigramRecord.count / contents.length;
     if (contents.length * p / (1 - p) <= reliableZSquared) {
-      unigramRecord.estimate = Math.NaN;
-      unigramRecord.variance = Math.NaN;
+      unigramRecord.estimate = Number.NaN;
+      unigramRecord.variance = Number.NaN;
       continue;
     }
     unigramRecord.estimate = p;
@@ -102,21 +102,21 @@ async function readFile() {
       const bigramCount = bigramRecord.instances.size;
       const p = bigramRecord.instances.size / (contents.length - 1);
       if ((contents.length - 1) * p / (1 - p) <= reliableZSquared) {
-        bigramRecord.estimate = Math.NaN;
-        bigramRecord.variance = Math.NaN;
-        bigramRecord.Z = Math.NaN;
-        bigramRecord.Z1 = Math.NaN;
-        bigramRecord.Z2 = Math.NaN;
+        bigramRecord.estimate = Number.NaN;
+        bigramRecord.variance = Number.NaN;
+        bigramRecord.Z = Number.NaN;
+        bigramRecord.Z1 = Number.NaN;
+        bigramRecord.Z2 = Number.NaN;
         continue;
       }
       bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
       bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
       const char0Record = unigrams.get(bigramRecord.str[0]);
       const char1Record = unigrams.get(bigramRecord.str[1]);
-      if (Math.isNaN(char0Record.estimate) || Math.isNaN(char1Record.estimate)) {
-        bigramRecord.Z = Math.NaN;
-        bigramRecord.Z1 = Math.NaN;
-        bigramRecord.Z2 = Math.NaN;
+      if (Number.isNaN(char0Record.estimate) || Number.isNaN(char1Record.estimate)) {
+        bigramRecord.Z = Number.NaN;
+        bigramRecord.Z1 = Number.NaN;
+        bigramRecord.Z2 = Number.NaN;
         continue;
       }
       const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
@@ -135,11 +135,11 @@ async function readFile() {
     for (const ngramRecord of ngrams.values()) {
       const p = ngramRecord.instances.size / (contents.length - N + 1);
       if ((contents.length - N + 1) * p / (1 - p) <= reliableZSquared) {
-        ngramRecord.estimate = Math.NaN;
-        ngramRecord.variance = Math.NaN;
-        ngramRecord.Z = Math.NaN;
-        ngramRecord.Z1 = Math.NaN;
-        ngramRecord.Z2 = Math.NaN;
+        ngramRecord.estimate = Number.NaN;
+        ngramRecord.variance = Number.NaN;
+        ngramRecord.Z = Number.NaN;
+        ngramRecord.Z1 = Number.NaN;
+        ngramRecord.Z2 = Number.NaN;
         continue;
       }
       ngramRecord.estimate = p;
@@ -167,8 +167,8 @@ async function readFile() {
       const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
       const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
       const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
-      if (Math.isNaN(char0Record.estimate) || Math.isNaN(suffixRecord.estimate)) {
-        ngramRecord.Z1 = Math.NaN;
+      if (Number.isNaN(char0Record.estimate) || Number.isNaN(suffixRecord.estimate)) {
+        ngramRecord.Z1 = Number.NaN;
       } else {
         const ngramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
         const ngramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
@@ -177,8 +177,8 @@ async function readFile() {
         const ngramDifferenceStdev1 = Math.sqrt(ngramDifferenceVariance1);
         ngramRecord.Z1 = ngramDifferenceEstimate1 / ngramDifferenceStdev1;
       }
-      if (Math.isNaN(prefixRecord.estimate) || Math.isNaN(charNRecord.estimate)) {
-        ngramRecord.Z2 = Math.NaN;
+      if (Number.isNaN(prefixRecord.estimate) || Number.isNaN(charNRecord.estimate)) {
+        ngramRecord.Z2 = Number.NaN;
       } else {
         const ngramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
         const ngramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
@@ -192,7 +192,7 @@ async function readFile() {
   function getVettedNgrams(ngrams) {
     const vettedNgrams = new Map();
     for (const ngramRecord of ngrams.values()) {
-      if (!Math.isNaN(ngramRecord.Z1) && !Math.isNaN(ngramRecord.Z2) && ((ngramRecord.Z1 > thresholdZ) || (ngramRecord.Z2 > thresholdZ))) {
+      if (!Number.isNaN(ngramRecord.Z1) && !Number.isNaN(ngramRecord.Z2) && ((ngramRecord.Z1 > thresholdZ) || (ngramRecord.Z2 > thresholdZ))) {
         vettedNgrams.set(ngramRecord.str, {
           str: ngramRecord.str,
           instances: new Set(ngramRecord.instances),
