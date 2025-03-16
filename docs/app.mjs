@@ -65,7 +65,7 @@ async function readFile() {
 
   function countNgrams(N) {
     const ngrams = new Map();
-    let prevChars = contents.slice(0, N - 1);
+    let prevChars = contents.slice(0, N);
     for (let i = N; i < contents.length; ++i) {
       const char = contents[i];
       const ngram = prevChars + char;
@@ -122,8 +122,8 @@ async function readFile() {
       const ngramDifferenceStdev = Math.sqrt(ngramDifferenceVariance);
       ngramRecord.Z = ngramDifferenceEstimate / ngramDifferenceStdev;
       const char0Record = unigrams.get(ngramRecord.str[0]);
-      const prefixRecord = subNgrams.get(ngramRecord.str.slice(1));
-      const suffixRecord = subNgrams.get(ngramRecord.str.slice(0, N - 1));
+      const suffixRecord = subNgrams.get(ngramRecord.str.slice(1));
+      const prefixRecord = subNgrams.get(ngramRecord.str.slice(0, N - 1));
       const charNRecord = unigrams.get(ngramRecord.str[N - 1]);
       const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
       const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
