@@ -57,7 +57,7 @@ async function readFile() {
   const n4grams = countNgrams(4);
   computeStatistics(4, n4grams, trigrams);
   const vettedN4grams = getVettedNgrams(n4grams);
-  const vetted2Trigrams = crossvetNgrams(3, vettedN4grams, vettedTrigrams, bigrams);
+  const vetted2Trigrams = crossvetNgrams(4, vettedN4grams, vettedTrigrams, bigrams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
   console.log(Array.from(vetted2Bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
   console.log(Array.from(vetted2Trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
