@@ -29,24 +29,32 @@ const reliableZ = 3;
 
 async function readFile() {
   const reliableZSquared = reliableZ * reliableZ;
+  const maxN = 10;
+  const ngrams = new Array(maxN);
+  const vettedNgrams = new Array(maxN);
+  const decimatedNgrams = new Array(maxN);
+  const vettedDecimatedNgrams = new Array(maxN);
   const file = await openFileDialog();
   const contents = await file.text();
   const unigrams = getUnigramEstimates(contents);
-  const bigrams = getNgramEstimates(2);
-  const vettedBigrams = vetBigramPossibilities(bigrams, unigrams);
-  const trigrams = getNgramEstimates(3);
-  const vettedTrigrams = vetNgramPossibilities(3, trigrams, bigrams);
-  const decimatedBigrams = decimateNgrams(2, vettedBigrams, vettedTrigrams);
-  const vettedDecimatedBigrams = vetBigramPossibilities(decimatedBigrams, unigrams);
-  const n4grams = getNgramEstimates(4);
-  const vetted4grams = vetNgramPossibilities(4, n4grams, trigrams);
-  const decimatedTrigrams = decimateNgrams(3, vettedTrigrams, vetted4grams);
-  const vettedDecimatedTrigrams = vetNgramPossibilities(3, decimatedTrigrams, bigrams, unigrams);
-  calculateNgramEstimates(4, vetted4grams);
+  ngrams[2] = getNgramEstimates(2);
+  vettedNgrams[2] = vetBigramPossibilities(ngrams[2], unigrams);
+  ngrams[3] = getNgramEstimates(3);
+  vettedNgrams[3] = vetNgramPossibilities(3, ngrams[3], ngrams[2], unigrams);
+  decimatedNgrams[2] = decimateNgrams(2, vettedNgrams[2], vettedNgrams[3]);
+  vettedDecimatedNgrams[2] = vetBigramPossibilities(decimatedNgrams[2], unigrams);
+  for (let i = 4; i < maxN; ++i) {
+    ngrams[i] = getNgramEstimates(i);
+    vettedNgrams[i] = vetNgramPossibilities(i, ngrams[i], ngrams[i - 1]);
+    decimatedNgrams[i - 1] = decimateNgrams(i - 1, vettedNgrams[i - 1], vettedNgrams[i]);
+    vettedDecimatedNgrams[i - 1] = vetNgramPossibilities(i - 1, decimatedNgrams[i - 1], ngrams[i - 2], unigrams);
+  }
+  calculateNgramEstimates(maxN, vettedNgrams[maxN]);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  console.log(Array.from(vettedDecimatedBigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
-  console.log(Array.from(vettedDecimatedTrigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
-  console.log(Array.from(vetted4grams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  for (let i = 2; i < maxN; ++i) {
+    console.log(Array.from(vettedDecimatedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  }
+  console.log(Array.from(vettedNgrams[maxN].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
   function vetBigramPossibilities(bigrams, unigrams) {
     calculateBigramProbabilities(bigrams, unigrams);
