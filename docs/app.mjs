@@ -65,6 +65,7 @@ async function readFile() {
   crossvetNgrams(3, vettedTrigrams, vettedBigrams);
   computeBigramStatistics(vettedBigrams);
   const crossVettedBigrams = getVettedNgrams(vettedBigrams);
+  computeBigramStatistics(crossVettedBigrams);
   // 4-grams
   const n4grams = countNgrams(4);
   computeStatistics(4, n4grams, trigrams);
@@ -72,6 +73,7 @@ async function readFile() {
   crossvetNgrams(4, vetted4grams, vettedTrigrams);
   computeStatistics(3, vettedTrigrams, bigrams);
   const crossVettedTrigrams = getVettedNgrams(vettedTrigrams);
+  computeStatistics(3, crossVettedTrigrams, bigrams);
   computeStatistics(4, vetted4grams, trigrams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
   console.log(Array.from(crossVettedBigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
