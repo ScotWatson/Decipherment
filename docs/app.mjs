@@ -167,14 +167,14 @@ async function readFile() {
       if (prefix) {
         const prefixRecord = subNgrams.get(prefix);
         for (const instance of ngramRecord.instances) {
-          prefixRecord.instances.remove(instance);
+          prefixRecord.instances.delete(instance);
         }
       }
       const suffix = ngramRecord.str.slice(1);
       if (suffix) {
         const suffixRecord = subNgrams.get(suffix);
         for (const instance of ngramRecord.instances) {
-          suffixRecord.instances.remove(instance + 1);
+          suffixRecord.instances.delete(instance + 1);
         }
       }
     }
