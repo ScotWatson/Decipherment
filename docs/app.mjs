@@ -50,12 +50,12 @@ async function readFile() {
   const vettedBigrams = getVettedNgrams(bigrams);
   // Trigrams
   const trigrams = countNgrams(3);
-  computeStatistics(3, trigrams);
+  computeStatistics(3, trigrams, bigrams);
   const vettedTrigrams = getVettedNgrams(trigrams);
   const vetted2Bigrams = crossvetNgrams(3, vettedBigrams, vettedTrigrams);
   // 4-grams
   const n4grams = countNgrams(4);
-  computeStatistics(4, n4grams);
+  computeStatistics(4, n4grams, trigrams);
   const vettedN4grams = getVettedNgrams(n4grams);
   const vetted2Trigrams = crossvetNgrams(3, vettedTrigrams, vettedN4grams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
