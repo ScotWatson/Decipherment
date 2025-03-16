@@ -52,36 +52,17 @@ async function readFile() {
   const trigrams = countNgrams(3);
   computeStatistics(3, trigrams, bigrams);
   const vettedTrigrams = getVettedNgrams(trigrams);
-  const vetted2Bigrams = crossvetNgrams(3, vettedTrigrams, vettedBigrams, unigrams);
+  const crossVettedBigrams = crossvetNgrams(3, vettedTrigrams, vettedBigrams, unigrams);
   // 4-grams
   const n4grams = countNgrams(4);
   computeStatistics(4, n4grams, trigrams);
-  const vettedN4grams = getVettedNgrams(n4grams);
-  const vetted2Trigrams = crossvetNgrams(4, vettedN4grams, vettedTrigrams, bigrams);
+  const vetted4grams = getVettedNgrams(n4grams);
+  const crossVettedTrigrams = crossvetNgrams(4, vetted4grams, vettedTrigrams, bigrams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  console.log(Array.from(vetted2Bigrams.values()).sort((entry1, entry2) => { return (entry1.bigramZ < entry2.bigramZ) ? 1 : -1; }));
-  console.log(Array.from(vetted2Trigrams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
-  console.log(Array.from(vetted4grams.values()).sort((entry1, entry2) => { return (entry1.trigramZ < entry2.trigramZ) ? 1 : -1; }));
+  console.log(Array.from(crossVettedBigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  console.log(Array.from(crossVettedTrigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  console.log(Array.from(vetted4grams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
-  function computeBigramStatistics() {
-    for (const bigramRecord of bigrams.values()) {
-      const bigramCount = bigramRecord.instances.size;
-      bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
-      bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
-      const char0Record = unigrams.get(bigramRecord.str[0]);
-      const char1Record = unigrams.get(bigramRecord.str[1]);
-      const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
-      const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
-      const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
-      const bigramIndependentVariance = (char0Record.variance + char0EstimateSquared) * (char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
-      const bigramDifferenceEstimate = bigramRecord.estimate - bigramIndependentEstimate;
-      const bigramDifferenceVariance = bigramRecord.variance + bigramIndependentVariance;
-      const bigramDifferenceStdev = Math.sqrt(bigramDifferenceVariance);
-      bigramRecord.Z = bigramDifferenceEstimate / bigramDifferenceStdev;
-      bigramRecord.Z1 = bigramRecord.Z;
-      bigramRecord.Z2 = bigramRecord.Z;
-    }
-  }
   function countNgrams(N) {
     const ngrams = new Map();
     let prevChars = contents.slice(0, N - 1);
@@ -100,6 +81,25 @@ async function readFile() {
       prevChars = prevChars.slice(1) + char;
     }
     return ngrams;
+  }
+  function computeBigramStatistics() {
+    for (const bigramRecord of bigrams.values()) {
+      const bigramCount = bigramRecord.instances.size;
+      bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
+      bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
+      const char0Record = unigrams.get(bigramRecord.str[0]);
+      const char1Record = unigrams.get(bigramRecord.str[1]);
+      const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
+      const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
+      const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
+      const bigramIndependentVariance = (char0Record.variance + char0EstimateSquared) * (char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
+      const bigramDifferenceEstimate = bigramRecord.estimate - bigramIndependentEstimate;
+      const bigramDifferenceVariance = bigramRecord.variance + bigramIndependentVariance;
+      const bigramDifferenceStdev = Math.sqrt(bigramDifferenceVariance);
+      bigramRecord.Z = bigramDifferenceEstimate / bigramDifferenceStdev;
+      bigramRecord.Z1 = bigramRecord.Z;
+      bigramRecord.Z2 = bigramRecord.Z;
+    }
   }
   function computeStatistics(N, ngrams, subNgrams) {
     for (const ngramRecord of ngrams.values()) {
@@ -150,35 +150,30 @@ async function readFile() {
         vettedNgrams.set(NgramRecord.str, {
           str: NgramRecord.str,
           instances: new Set(NgramRecord.instances),
-          estimate: NgramRecord.estimate,
-          variance: NgramRecord.variance,
-          Z: NgramRecord.Z,
-          Z1: NgramRecord.Z1,
-          Z2: NgramRecord.Z2,
         });
       }
     }
     return vettedNgrams;
   }
-  function crossvetNgrams(N, ngrams, subNgrams, subSubNgrams) {
+  function crossvetNgrams(N, vettedNgrams, vettedSubNgrams, subSubNgrams) {
     const vettedSubNgrams = new Map();
-    for (const ngramRecord of ngrams.values()) {
+    for (const ngramRecord of vettedNgrams.values()) {
       const prefix = ngramRecord.str.slice(0, N - 1);
-      const prefixRecord = subNgrams.get(prefix);
+      const prefixRecord = vettedSubNgrams.get(prefix);
       if (prefixRecord) {
         for (const instance of ngramRecord.instances) {
           prefixRecord.instances.delete(instance);
         }
       }
       const suffix = ngramRecord.str.slice(1);
-      const suffixRecord = subNgrams.get(suffix);
+      const suffixRecord = vettedSubNgrams.get(suffix);
       if (suffixRecord) {
         for (const instance of ngramRecord.instances) {
           suffixRecord.instances.delete(instance + 1);
         }
       }
     }
-    computeStatistics(N - 1, subNgrams, subSubNgrams);
-    return getVettedNgrams(subNgrams);
+    computeStatistics(N - 1, vettedSubNgrams, subSubNgrams);
+    return getVettedNgrams(vettedSubNgrams);
   }
 }
