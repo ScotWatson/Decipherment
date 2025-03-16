@@ -156,7 +156,6 @@ async function readFile() {
     return vettedNgrams;
   }
   function crossvetNgrams(N, vettedNgrams, vettedSubNgrams, subSubNgrams) {
-    const vettedSubNgrams = new Map();
     for (const ngramRecord of vettedNgrams.values()) {
       const prefix = ngramRecord.str.slice(0, N - 1);
       const prefixRecord = vettedSubNgrams.get(prefix);
