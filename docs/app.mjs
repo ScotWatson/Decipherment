@@ -208,10 +208,7 @@ async function readFile() {
     const vettedNgrams = new Map();
     for (const ngramRecord of ngrams.values()) {
       if (!Number.isNaN(ngramRecord.Z1) && !Number.isNaN(ngramRecord.Z2) && ((ngramRecord.Z1 > thresholdZ) || (ngramRecord.Z2 > thresholdZ))) {
-        vettedNgrams.set(ngramRecord.str, {
-          str: ngramRecord.str,
-          instances: ngramRecord.instances,
-        });
+        vettedNgrams.set(ngramRecord.str, ngramRecord);
       }
     }
     return vettedNgrams;
