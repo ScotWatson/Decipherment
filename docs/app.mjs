@@ -100,13 +100,13 @@ async function readFile() {
   function computeBigramStatistics(bigrams) {
     for (const bigramRecord of bigrams.values()) {
       const bigramCount = bigramRecord.instances.size;
-      const p = ngramRecord.instances.size / (contents.length - 1);
+      const p = bigramRecord.instances.size / (contents.length - 1);
       if ((contents.length - N + 1) * p / (1 - p) <= reliableZSquared) {
-        ngramRecord.estimate = Math.NaN;
-        ngramRecord.variance = Math.NaN;
-        ngramRecord.Z = Math.NaN;
-        ngramRecord.Z1 = Math.NaN;
-        ngramRecord.Z2 = Math.NaN;
+        bigramRecord.estimate = Math.NaN;
+        bigramRecord.variance = Math.NaN;
+        bigramRecord.Z = Math.NaN;
+        bigramRecord.Z1 = Math.NaN;
+        bigramRecord.Z2 = Math.NaN;
         continue;
       }
       bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
