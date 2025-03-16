@@ -24,7 +24,11 @@ btnOpen.append("Open File");
 btnOpen.addEventListener("click", readFile);
 document.body.appendChild(btnOpen);
 
+const thresholdZ = 5;
+const reliableZ = 3;
+
 async function readFile() {
+  const reliableZSquared = reliableZ * reliableZ;
   const file = await openFileDialog();
   const contents = await file.text();
   // Unigrams
@@ -41,7 +45,13 @@ async function readFile() {
     }
   }
   for (const unigram of unigrams.values()) {
-    unigram.estimate = unigram.count / contents.length;
+    const p = unigram.count / contents.length;
+    if (contents.length * p / (1 - p) <= reliableZSquared) {
+      ngramRecord.estimate = Math.NaN;
+      ngramRecord.variance = Math.NaN;
+      continue;
+    }
+    unigram.estimate = p;
     unigram.variance = unigram.estimate * (1 - unigram.estimate) / contents.length;
   }
   // Bigrams
@@ -94,6 +104,12 @@ async function readFile() {
       bigramRecord.variance = bigramRecord.estimate * (1 - bigramRecord.estimate) / (contents.length - 1);
       const char0Record = unigrams.get(bigramRecord.str[0]);
       const char1Record = unigrams.get(bigramRecord.str[1]);
+      if (Math.isNaN(char0Record.estimate) || Math.isNaN(char1Record.estimate)) {
+        bigramRecord.Z = Math.NaN;
+        bigramRecord.Z1 = Math.NaN;
+        bigramRecord.Z2 = Math.NaN;
+        continue;
+      }
       const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
       const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
       const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
@@ -109,7 +125,16 @@ async function readFile() {
   function computeStatistics(N, ngrams, subNgrams) {
     for (const ngramRecord of ngrams.values()) {
       const ngramCount = ngramRecord.instances.size;
-      ngramRecord.estimate = ngramRecord.instances.size / (contents.length - 1);
+      const p = ngramRecord.instances.size / (contents.length - 1);
+      if (ngramCount * p / (1 - p) <= reliableZSquared) {
+        ngramRecord.estimate = Math.NaN;
+        ngramRecord.variance = Math.NaN;
+        ngramRecord.Z = Math.NaN;
+        ngramRecord.Z1 = Math.NaN;
+        ngramRecord.Z2 = Math.NaN;
+        continue;
+      }
+      ngramRecord.estimate = p;
       ngramRecord.variance = ngramRecord.estimate * (1 - ngramRecord.estimate) / (contents.length - 1);
       let ngramIndependentEstimate = 1;
       let ngramIndependentVariancePart1 = 1; // variance - estimate squared
@@ -119,7 +144,7 @@ async function readFile() {
         ngramIndependentEstimate *= charRecord.estimate;
         const estimateSquared = charRecord.estimate * charRecord.estimate;
         ngramIndependentVariancePart1 *= (charRecord.variance + estimateSquared);
-        ngramIndependentVariancePart2 *= charRecord.variance;
+        ngramIndependentVariancePart2 *= estimateSquared;
       }
       const ngramIndependentVariance = ngramIndependentVariancePart1 - ngramIndependentVariancePart2;
       const ngramDifferenceEstimate = ngramRecord.estimate - ngramIndependentEstimate;
@@ -134,27 +159,35 @@ async function readFile() {
       const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
       const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
       const charNEstimateSquared = charNRecord.estimate * charNRecord.estimate;
-      const ngramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
-      const ngramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
-      const ngramDifferenceEstimate1 = ngramRecord.estimate - ngramIndependentEstimate1;
-      const ngramDifferenceVariance1 = ngramRecord.variance + ngramIndependentVariance1;
-      const ngramDifferenceStdev1 = Math.sqrt(ngramDifferenceVariance1);
-      ngramRecord.Z1 = ngramDifferenceEstimate1 / ngramDifferenceStdev1;
-      const ngramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
-      const ngramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
-      const ngramDifferenceEstimate2 = ngramRecord.estimate - ngramIndependentEstimate2;
-      const ngramDifferenceVariance2 = ngramRecord.variance + ngramIndependentVariance2;
-      const ngramDifferenceStdev2 = Math.sqrt(ngramDifferenceVariance2);
-      ngramRecord.Z2 = ngramDifferenceEstimate2 / ngramDifferenceStdev2;
+      if (Math.isNaN(char0Record.estimate) || Math.isNaN(suffixRecord.estimate)) {
+        ngramRecord.Z1 = Math.NaN;
+      } else {
+        const ngramIndependentEstimate1 = char0Record.estimate * suffixRecord.estimate;
+        const ngramIndependentVariance1 = (char0Record.variance + char0EstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (char0EstimateSquared * suffixEstimateSquared);
+        const ngramDifferenceEstimate1 = ngramRecord.estimate - ngramIndependentEstimate1;
+        const ngramDifferenceVariance1 = ngramRecord.variance + ngramIndependentVariance1;
+        const ngramDifferenceStdev1 = Math.sqrt(ngramDifferenceVariance1);
+        ngramRecord.Z1 = ngramDifferenceEstimate1 / ngramDifferenceStdev1;
+      }
+      if (Math.isNaN(prefixRecord.estimate) || Math.isNaN(charNRecord.estimate)) {
+        ngramRecord.Z2 = Math.NaN;
+      } else {
+        const ngramIndependentEstimate2 = prefixRecord.estimate * charNRecord.estimate;
+        const ngramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (charNRecord.variance + charNEstimateSquared) - (prefixEstimateSquared * charNEstimateSquared);
+        const ngramDifferenceEstimate2 = ngramRecord.estimate - ngramIndependentEstimate2;
+        const ngramDifferenceVariance2 = ngramRecord.variance + ngramIndependentVariance2;
+        const ngramDifferenceStdev2 = Math.sqrt(ngramDifferenceVariance2);
+        ngramRecord.Z2 = ngramDifferenceEstimate2 / ngramDifferenceStdev2;
+      }
     }
   }
-  function getVettedNgrams(Ngrams) {
+  function getVettedNgrams(ngrams) {
     const vettedNgrams = new Map();
-    for (const NgramRecord of Ngrams.values()) {
-      if ((NgramRecord.Z1 > 3) || (NgramRecord.Z2 > 3)) {
-        vettedNgrams.set(NgramRecord.str, {
-          str: NgramRecord.str,
-          instances: new Set(NgramRecord.instances),
+    for (const ngramRecord of ngrams.values()) {
+      if (!Math.isNaN(ngramRecord.Z1) && !Math.isNaN(ngramRecord.Z2) && ((ngramRecord.Z1 > thresholdZ) || (ngramRecord.Z2 > thresholdZ))) {
+        vettedNgrams.set(ngramRecord.str, {
+          str: ngramRecord.str,
+          instances: new Set(ngramRecord.instances),
         });
       }
     }
