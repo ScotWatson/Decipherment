@@ -158,6 +158,7 @@ async function readFile() {
         });
       }
     }
+    return vettedNgrams;
   }
   function crossvetNgrams(N, subNgrams, Ngrams) {
     const vettedSubNgrams = new Map();
