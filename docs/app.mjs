@@ -46,18 +46,23 @@ async function readFile() {
   }
   // Bigrams
   const bigrams = countNgrams(2);
-  computeBigramStatistics();
+  computeBigramStatistics(bigrams);
   const vettedBigrams = getVettedNgrams(bigrams);
   // Trigrams
   const trigrams = countNgrams(3);
   computeStatistics(3, trigrams, bigrams);
   const vettedTrigrams = getVettedNgrams(trigrams);
-  const crossVettedBigrams = crossvetNgrams(3, vettedTrigrams, vettedBigrams, unigrams);
+  crossvetNgrams(3, vettedTrigrams, vettedBigrams);
+  computeBigramStatistics(vettedBigrams);
+  const crossVettedBigrams = getVettedNgrams(vettedBigrams);
   // 4-grams
   const n4grams = countNgrams(4);
   computeStatistics(4, n4grams, trigrams);
   const vetted4grams = getVettedNgrams(n4grams);
-  const crossVettedTrigrams = crossvetNgrams(4, vetted4grams, vettedTrigrams, bigrams);
+  crossvetNgrams(4, vetted4grams, vettedTrigrams);
+  computeStatistics(3, vettedTrigrams, bigrams);
+  const crossVettedTrigrams = getVettedNgrams(vettedTrigrams);
+  computeStatistics(4, vetted4grams, trigrams);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
   console.log(Array.from(crossVettedBigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
   console.log(Array.from(crossVettedTrigrams.values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
@@ -82,7 +87,7 @@ async function readFile() {
     }
     return ngrams;
   }
-  function computeBigramStatistics() {
+  function computeBigramStatistics(bigrams) {
     for (const bigramRecord of bigrams.values()) {
       const bigramCount = bigramRecord.instances.size;
       bigramRecord.estimate = bigramRecord.instances.size / (contents.length - 1);
@@ -155,7 +160,7 @@ async function readFile() {
     }
     return vettedNgrams;
   }
-  function crossvetNgrams(N, vettedNgrams, vettedSubNgrams, subSubNgrams) {
+  function crossvetNgrams(N, vettedNgrams, vettedSubNgrams) {
     for (const ngramRecord of vettedNgrams.values()) {
       const prefix = ngramRecord.str.slice(0, N - 1);
       const prefixRecord = vettedSubNgrams.get(prefix);
@@ -172,7 +177,5 @@ async function readFile() {
         }
       }
     }
-    computeStatistics(N - 1, vettedSubNgrams, subSubNgrams);
-    return getVettedNgrams(vettedSubNgrams);
   }
 }
