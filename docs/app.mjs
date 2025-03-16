@@ -65,8 +65,8 @@ async function readFile() {
 
   function countNgrams(N) {
     const ngrams = new Map();
-    let prevChars = contents.slice(0, N);
-    for (let i = N; i < contents.length; ++i) {
+    let prevChars = contents.slice(0, N - 1);
+    for (let i = N - 1; i < contents.length; ++i) {
       const char = contents[i];
       const ngram = prevChars + char;
       const record = ngrams.get(ngram);
