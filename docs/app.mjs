@@ -43,18 +43,18 @@ async function readFile() {
   vettedNgrams[3] = vetNgramPossibilities(3, ngrams[3], ngrams[2], unigrams);
   decimatedNgrams[2] = decimateNgrams(2, vettedNgrams[2], vettedNgrams[3]);
   vettedDecimatedNgrams[2] = vetBigramPossibilities(decimatedNgrams[2], unigrams);
-  for (let i = 4; i <= maxN; ++i) {
+  for (let i = 4; i < maxN; ++i) {
     ngrams[i] = getNgramEstimates(i);
     vettedNgrams[i] = vetNgramPossibilities(i, ngrams[i], ngrams[i - 1]);
     decimatedNgrams[i - 1] = decimateNgrams(i - 1, vettedNgrams[i - 1], vettedNgrams[i]);
     vettedDecimatedNgrams[i - 1] = vetNgramPossibilities(i - 1, decimatedNgrams[i - 1], ngrams[i - 2], unigrams);
   }
-  calculateNgramEstimates(maxN, vettedNgrams[maxN]);
+  calculateNgramEstimates(maxN - 1, vettedNgrams[maxN - 1]);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
-  for (let i = 2; i < maxN; ++i) {
+  for (let i = 2; i < maxN - 1; ++i) {
     console.log(Array.from(vettedDecimatedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
   }
-  console.log(Array.from(vettedNgrams[maxN].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  console.log(Array.from(vettedNgrams[maxN - 1].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
   function vetBigramPossibilities(bigrams, unigrams) {
     calculateBigramProbabilities(bigrams, unigrams);
