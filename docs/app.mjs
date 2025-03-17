@@ -56,6 +56,55 @@ async function readFile() {
   }
   console.log(Array.from(vettedNgrams[maxN - 1].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
+  const tokens = new Array();
+  for (let i = 2; i < maxN - 1; ++i) {
+    for (const record of vettedDecimatedNgrams[i].values()) {
+      for (const instance of record.instances) {
+        tokens.push({
+          str: record.str,
+          index: instance,
+        });
+      }
+    }
+  }
+  const finalTokens = new Array();
+  for (let i = 0; i < tokens.length - 1; ++i) {
+    const tokenEnd = tokens[i].index + tokens[i].str.length;
+    const nestTokenStart = tokens[i + 1].index;
+    if (tokenEnd === nextTokenStart) {
+      finalTokens.push(tokens[i]);
+    } else if (tokenEnd < nextTokenStart) {
+      const overlap = tokenEnd - tokens[i + 1].index;
+      tokens[i].str = tokens[i].str.slice(0, tokens[i + 1].index - tokens[i].index);
+      finalTokens.push(tokens[i]);
+      finalTokens.push({
+        str: tokens[i + 1].str.slice(0, overlap),
+        index: tokens[i + 1].index,
+      });
+      tokens[i + 1].str = tokens[i + 1].str.slice(overlap);
+      tokens[i + 1].index = tokenEnd;
+    } else {
+      finalTokens.push(tokens[i]);
+      for (let j = tokenEnd; j < tokens[i + 1].index; ++j) {
+        finalTokens.push({
+          str: contents[j],
+          index: j,
+        });
+      }
+    }
+  }
+  finalTokens.push(tokens[tokens.length - 1]);
+
+  let invert = false;
+  for (let i = 0; i < finalTokens.length; ++i) {
+    const span = document.createElement("span");
+    span.style.color = invert ? white : black;
+    span.style.backgroundColor = invert ? black : white;
+    span.append(finalTokens[i].str);
+    document.body.appendChild(span);
+    invert = !invert;
+  }
+
   function vetBigramPossibilities(bigrams, unigrams) {
     calculateBigramProbabilities(bigrams, unigrams);
     return getVettedNgrams(bigrams);
@@ -121,6 +170,7 @@ async function readFile() {
         reliableUnigrams.set(unigramRecord.str, unigramRecord);
         unigramRecord.estimate = p;
         unigramRecord.variance = p * (1 - p) / contents.length;
+        unigramRecord.estimateSquared = p * p;
       }
     }
     return reliableUnigrams;
@@ -133,6 +183,7 @@ async function readFile() {
         reliableNgrams.set(ngramRecord.str, ngramRecord);
         ngramRecord.estimate = p;
         ngramRecord.variance = p * (1 - p) / (contents.length - 1);
+        ngramRecord.estimateSquared = p * p;
       }
     }
     return reliableNgrams;
@@ -142,10 +193,8 @@ async function readFile() {
       const char0Record = unigrams.get(bigramRecord.str[0]);
       const char1Record = unigrams.get(bigramRecord.str[1]);
       if (char0Record && char1Record) {
-        const char0EstimateSquared = char0Record.estimate * char0Record.estimate;
-        const char1EstimateSquared = char1Record.estimate * char1Record.estimate;
         const bigramIndependentEstimate = char0Record.estimate * char1Record.estimate;
-        const bigramIndependentVariance = (char0Record.variance + char0EstimateSquared) * (char1Record.variance + char1EstimateSquared) - (char0EstimateSquared * char1EstimateSquared);
+        const bigramIndependentVariance = (char0Record.variance + char0Record.estimateSquared) * (char1Record.variance + char1Record.estimateSquared) - (char0Record.estimateSquared * char1Record.estimateSquared);
         const bigramDifferenceEstimate = bigramRecord.estimate - bigramIndependentEstimate;
         const bigramDifferenceVariance = bigramRecord.variance + bigramIndependentVariance;
         const bigramDifferenceStdev = Math.sqrt(bigramDifferenceVariance);
@@ -189,10 +238,8 @@ async function readFile() {
       if (!startCharRecord || !suffixRecord) {
         ngramRecord.Z1 = Number.NaN;
       } else {
-        const startCharEstimateSquared = startCharRecord.estimate * startCharRecord.estimate;
-        const suffixEstimateSquared = suffixRecord.estimate * suffixRecord.estimate;
         const ngramIndependentEstimate1 = startCharRecord.estimate * suffixRecord.estimate;
-        const ngramIndependentVariance1 = (startCharRecord.variance + startCharEstimateSquared) * (suffixRecord.variance + suffixEstimateSquared) - (startCharEstimateSquared * suffixEstimateSquared);
+        const ngramIndependentVariance1 = (startCharRecord.variance + startCharRecord.estimateSquared) * (suffixRecord.variance + suffixRecord.estimateSquared) - (startCharRecord.estimateSquared * suffixRecord.estimateSquared);
         const ngramDifferenceEstimate1 = ngramRecord.estimate - ngramIndependentEstimate1;
         const ngramDifferenceVariance1 = ngramRecord.variance + ngramIndependentVariance1;
         const ngramDifferenceStdev1 = Math.sqrt(ngramDifferenceVariance1);
@@ -201,10 +248,8 @@ async function readFile() {
       if (!prefixRecord || !endCharRecord) {
         ngramRecord.Z2 = Number.NaN;
       } else {
-        const prefixEstimateSquared = prefixRecord.estimate * prefixRecord.estimate;
-        const endCharEstimateSquared = endCharRecord.estimate * endCharRecord.estimate;
         const ngramIndependentEstimate2 = prefixRecord.estimate * endCharRecord.estimate;
-        const ngramIndependentVariance2 = (prefixRecord.variance + prefixEstimateSquared) * (endCharRecord.variance + endCharEstimateSquared) - (prefixEstimateSquared * endCharEstimateSquared);
+        const ngramIndependentVariance2 = (prefixRecord.variance + prefixRecord.estimateSquared) * (endCharRecord.variance + endCharRecord.estimateSquared) - (prefixRecord.estimateSquared * endCharRecord.estimateSquared);
         const ngramDifferenceEstimate2 = ngramRecord.estimate - ngramIndependentEstimate2;
         const ngramDifferenceVariance2 = ngramRecord.variance + ngramIndependentVariance2;
         const ngramDifferenceStdev2 = Math.sqrt(ngramDifferenceVariance2);
