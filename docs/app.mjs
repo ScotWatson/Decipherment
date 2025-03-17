@@ -59,17 +59,18 @@ async function readFile() {
   }
   console.log(Array.from(vettedNgrams[maxN - 1].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
-  const tokens = new Array();
+  const unsortedTokens = new Array();
   for (let i = 2; i < maxN - 1; ++i) {
     for (const record of vettedDecimatedNgrams[i].values()) {
       for (const instance of record.instances) {
-        tokens.push({
+        unsortedTokens.push({
           str: record.str,
           index: instance,
         });
       }
     }
   }
+  const tokens = unsortedTokens.sort((entry1, entry2) => { return (entry1.index < entry2.index) ? -1 : 1; });
   const finalTokens = new Array();
   for (let i = 0; i < tokens.length - 1; ++i) {
     const tokenEnd = tokens[i].index + tokens[i].str.length;
