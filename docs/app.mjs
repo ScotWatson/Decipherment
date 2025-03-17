@@ -83,11 +83,16 @@ async function readFile() {
     const tokenEnd = tokens[i].index + tokens[i].str.length;
     const nextTokenStart = tokens[i + 1].index;
     if (tokenEnd === nextTokenStart) {
-      finalTokens.push(tokens[i]);
+      finalTokens.push({
+        str: tokens[i].str,
+        index: tokens[i].index,
+      });
     } else if (tokenEnd > nextTokenStart) {
       const overlap = tokenEnd - tokens[i + 1].index;
-      tokens[i].str = tokens[i].str.slice(0, tokens[i + 1].index - tokens[i].index);
-      finalTokens.push(tokens[i]);
+      finalTokens.push({
+        str: tokens[i].str.slice(0, tokens[i + 1].index - tokens[i].index),
+        index: tokens[i].index,
+      });
       finalTokens.push({
         str: tokens[i + 1].str.slice(0, overlap),
         index: tokens[i + 1].index,
@@ -95,7 +100,10 @@ async function readFile() {
       tokens[i + 1].str = tokens[i + 1].str.slice(overlap);
       tokens[i + 1].index = tokenEnd;
     } else {
-      finalTokens.push(tokens[i]);
+      finalTokens.push({
+        str: tokens[i].str,
+        index: tokens[i].index,
+      });
       for (let j = tokenEnd; j < tokens[i + 1].index; ++j) {
         finalTokens.push({
           str: contents[j],
