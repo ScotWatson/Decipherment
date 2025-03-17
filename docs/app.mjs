@@ -101,8 +101,8 @@ async function readFile() {
   let invert = false;
   for (let i = 0; i < finalTokens.length; ++i) {
     const span = document.createElement("span");
-    span.style.color = invert ? white : black;
-    span.style.backgroundColor = invert ? black : white;
+    span.style.color = invert ? "white" : "black";
+    span.style.backgroundColor = invert ? "black" : "white";
     span.append(finalTokens[i].str);
     document.body.appendChild(span);
     invert = !invert;
