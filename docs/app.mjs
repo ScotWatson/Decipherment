@@ -98,6 +98,8 @@ async function readFile() {
     }
   }
   finalTokens.push(tokens[tokens.length - 1]);
+  console.log(tokens);
+  console.log(finalTokens);
 
   let invert = false;
   for (let i = 0; i < finalTokens.length; ++i) {
