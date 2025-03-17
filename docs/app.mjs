@@ -29,7 +29,7 @@ const reliableZ = 3;
 
 async function readFile() {
   const reliableZSquared = reliableZ * reliableZ;
-  const maxN = 10;
+  const maxN = 20;
   const ngrams = new Array(maxN);
   const vettedNgrams = new Array(maxN);
   const decimatedNgrams = new Array(maxN);
