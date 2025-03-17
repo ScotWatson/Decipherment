@@ -79,7 +79,9 @@ async function readFile() {
       index: j,
     });
   }
-  for (let i = 0; i < tokens.length - 1; ++i) {
+  let i = 0;
+  let currentToken = tokens[0];
+  while (i < tokens.length - 1) {
     const tokenEnd = tokens[i].index + tokens[i].str.length;
     const nextTokenStart = tokens[i + 1].index;
     if (tokenEnd === nextTokenStart) {
@@ -87,6 +89,10 @@ async function readFile() {
         str: tokens[i].str,
         index: tokens[i].index,
       });
+      currentToken = {
+        str: tokens[i + 1].str,
+        index: tokens[i + 1].index,
+      };
     } else if (tokenEnd > nextTokenStart) {
       const overlap = tokenEnd - tokens[i + 1].index;
       finalTokens.push({
@@ -97,8 +103,10 @@ async function readFile() {
         str: tokens[i + 1].str.slice(0, overlap),
         index: tokens[i + 1].index,
       });
-      tokens[i + 1].str = tokens[i + 1].str.slice(overlap);
-      tokens[i + 1].index = tokenEnd;
+      currentToken = {
+        str: tokens[i + 1].str.slice(overlap),
+        index: tokenEnd,
+      };
     } else {
       finalTokens.push({
         str: tokens[i].str,
@@ -110,7 +118,12 @@ async function readFile() {
           index: j,
         });
       }
+      currentToken = {
+        str: tokens[i + 1].str,
+        index: tokens[i + 1].index,
+      };
     }
+    ++i;
   }
   finalTokens.push(tokens[tokens.length - 1]);
   console.log(tokens);
