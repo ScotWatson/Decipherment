@@ -72,12 +72,19 @@ async function readFile() {
   }
   const tokens = unsortedTokens.sort((entry1, entry2) => { return (entry1.index < entry2.index) ? -1 : 1; });
   const finalTokens = new Array();
+  const seqStart = tokens[0].index;
+  for (let j = 0; j < seqStart; ++j) {
+    finalTokens.push({
+      str: contents[j],
+      index: j,
+    });
+  }
   for (let i = 0; i < tokens.length - 1; ++i) {
     const tokenEnd = tokens[i].index + tokens[i].str.length;
     const nextTokenStart = tokens[i + 1].index;
     if (tokenEnd === nextTokenStart) {
       finalTokens.push(tokens[i]);
-    } else if (tokenEnd < nextTokenStart) {
+    } else if (tokenEnd > nextTokenStart) {
       const overlap = tokenEnd - tokens[i + 1].index;
       tokens[i].str = tokens[i].str.slice(0, tokens[i + 1].index - tokens[i].index);
       finalTokens.push(tokens[i]);
