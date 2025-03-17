@@ -45,7 +45,7 @@ async function readFile() {
   vettedDecimatedNgrams[2] = vetBigramPossibilities(decimatedNgrams[2], unigrams);
   for (let i = 4; i < maxN; ++i) {
     ngrams[i] = getNgramEstimates(i);
-    vettedNgrams[i] = vetNgramPossibilities(i, ngrams[i], ngrams[i - 1]);
+    vettedNgrams[i] = vetNgramPossibilities(i, ngrams[i], ngrams[i - 1], unigrams);
     decimatedNgrams[i - 1] = decimateNgrams(i - 1, vettedNgrams[i - 1], vettedNgrams[i]);
     vettedDecimatedNgrams[i - 1] = vetNgramPossibilities(i - 1, decimatedNgrams[i - 1], ngrams[i - 2], unigrams);
   }
@@ -60,8 +60,8 @@ async function readFile() {
     calculateBigramProbabilities(bigrams, unigrams);
     return getVettedNgrams(bigrams);
   }
-  function vetNgramPossibilities(n, ngrams, subNgrams) {
-    calculateNgramProbabilities(n, ngrams, subNgrams);
+  function vetNgramPossibilities(n, ngrams, subNgrams, unigrams) {
+    calculateNgramProbabilities(n, ngrams, subNgrams, unigrams);
     return getVettedNgrams(ngrams);
   }
   function getUnigramEstimates(contents) {
