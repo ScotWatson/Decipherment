@@ -28,14 +28,15 @@ const thresholdZ = 6;
 const reliableZ = 3;
 
 async function readFile() {
+  const file = await openFileDialog();
+  const contents = await file.text();
+  const startTime = performance.now();
   const reliableZSquared = reliableZ * reliableZ;
   const maxN = 20;
   const ngrams = new Array(maxN);
   const vettedNgrams = new Array(maxN);
   const decimatedNgrams = new Array(maxN);
   const vettedDecimatedNgrams = new Array(maxN);
-  const file = await openFileDialog();
-  const contents = await file.text();
   const unigrams = getUnigramEstimates(contents);
   ngrams[2] = getNgramEstimates(2);
   vettedNgrams[2] = vetBigramPossibilities(ngrams[2], unigrams);
@@ -50,6 +51,8 @@ async function readFile() {
     vettedDecimatedNgrams[i - 1] = vetNgramPossibilities(i - 1, decimatedNgrams[i - 1], ngrams[i - 2], unigrams);
   }
   calculateNgramEstimates(maxN - 1, vettedNgrams[maxN - 1]);
+  const endTime = performance.now();
+  console.log(endTime - startTime);
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
   for (let i = 2; i < maxN - 1; ++i) {
     console.log(Array.from(vettedDecimatedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
@@ -70,7 +73,7 @@ async function readFile() {
   const finalTokens = new Array();
   for (let i = 0; i < tokens.length - 1; ++i) {
     const tokenEnd = tokens[i].index + tokens[i].str.length;
-    const nestTokenStart = tokens[i + 1].index;
+    const nextTokenStart = tokens[i + 1].index;
     if (tokenEnd === nextTokenStart) {
       finalTokens.push(tokens[i]);
     } else if (tokenEnd < nextTokenStart) {
