@@ -82,29 +82,33 @@ async function readFile() {
   let i = 0;
   let currentToken = tokens[0];
   while (i < tokens.length - 1) {
+    const nextToken = tokens[i + 1];
+    if (nextToken.index <= currentToken.index) {
+      ++i;
+      continue;
+    }
     const tokenEnd = currentToken.index + currentToken.str.length;
-    const nextTokenStart = tokens[i + 1].index;
-    if (tokenEnd === nextTokenStart) {
+    if (tokenEnd === nextToken.index) {
       finalTokens.push({
         str: currentToken.str,
         index: currentToken.index,
       });
       currentToken = {
-        str: tokens[i + 1].str,
-        index: tokens[i + 1].index,
+        str: nextToken.str,
+        index: nextToken.index,
       };
-    } else if (tokenEnd > nextTokenStart) {
-      const overlap = tokenEnd - tokens[i + 1].index;
+    } else if (tokenEnd > nextToken.index) {
+      const overlap = tokenEnd - nextToken.index;
       finalTokens.push({
-        str: currentToken.str.slice(0, tokens[i + 1].index - currentToken.index),
+        str: currentToken.str.slice(0, nextToken.index - currentToken.index),
         index: currentToken.index,
       });
       finalTokens.push({
-        str: tokens[i + 1].str.slice(0, overlap),
-        index: tokens[i + 1].index,
+        str: nextToken.str.slice(0, overlap),
+        index: nextToken.index,
       });
       currentToken = {
-        str: tokens[i + 1].str.slice(overlap),
+        str: nextToken.str.slice(overlap),
         index: tokenEnd,
       };
     } else {
@@ -112,15 +116,15 @@ async function readFile() {
         str: currentToken.str,
         index: currentToken.index,
       });
-      for (let j = tokenEnd; j < tokens[i + 1].index; ++j) {
+      for (let j = tokenEnd; j < nextToken.index; ++j) {
         finalTokens.push({
           str: contents[j],
           index: j,
         });
       }
       currentToken = {
-        str: tokens[i + 1].str,
-        index: tokens[i + 1].index,
+        str: nextToken.str,
+        index: nextToken.index,
       };
     }
     ++i;
