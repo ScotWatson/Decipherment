@@ -96,7 +96,7 @@ async function readFile() {
     } else if (tokenEnd > nextTokenStart) {
       const overlap = tokenEnd - tokens[i + 1].index;
       finalTokens.push({
-        str: currentToken.str.slice(0, tokens[i + 1].index - tokens[i].index),
+        str: currentToken.str.slice(0, tokens[i + 1].index - currentToken.index),
         index: currentToken.index,
       });
       finalTokens.push({
