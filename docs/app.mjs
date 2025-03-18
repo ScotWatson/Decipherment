@@ -24,7 +24,7 @@ btnOpen.append("Open File");
 btnOpen.addEventListener("click", readFile);
 document.body.appendChild(btnOpen);
 
-const thresholdZ = 6;
+const thresholdZ = 5;
 const reliableZ = 3;
 
 async function readFile() {
