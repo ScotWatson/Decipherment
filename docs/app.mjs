@@ -53,11 +53,28 @@ async function readFile() {
   calculateNgramEstimates(maxN - 1, vettedNgrams[maxN - 1]);
   const endTime = performance.now();
   console.log(endTime - startTime);
+  console.log("unigrams");
   console.log(Array.from(unigrams.values()).sort((entry1, entry2) => { return (entry1.count < entry2.count) ? 1 : -1; }));
+  console.log("n-grams");
+  for (let i = 2; i < maxN; ++i) {
+    console.log("n =", i);
+    console.log(Array.from(ngrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  }
+  console.log("vetted n-grams");
+  for (let i = 2; i < maxN; ++i) {
+    console.log("n =", i);
+    console.log(Array.from(vettedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  }
+  console.log("decimated n-grams");
   for (let i = 2; i < maxN - 1; ++i) {
+    console.log("n =", i);
+    console.log(Array.from(decimatedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
+  }
+  console.log("vetted decimated n-grams");
+  for (let i = 2; i < maxN - 1; ++i) {
+    console.log("n =", i);
     console.log(Array.from(vettedDecimatedNgrams[i].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
   }
-  console.log(Array.from(vettedNgrams[maxN - 1].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
   const unsortedTokens = new Array();
   for (let i = 4; i < maxN - 1; ++i) {
