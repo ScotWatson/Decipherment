@@ -60,7 +60,7 @@ async function readFile() {
   console.log(Array.from(vettedNgrams[maxN - 1].values()).sort((entry1, entry2) => { return (entry1.Z < entry2.Z) ? 1 : -1; }));
 
   const unsortedTokens = new Array();
-  for (let i = 2; i < maxN - 1; ++i) {
+  for (let i = 4; i < maxN - 1; ++i) {
     for (const record of vettedDecimatedNgrams[i].values()) {
       for (const instance of record.instances) {
         unsortedTokens.push({
@@ -132,8 +132,13 @@ async function readFile() {
   let invert = false;
   for (let i = 0; i < finalTokens.length; ++i) {
     const span = document.createElement("span");
-    span.style.color = invert ? "white" : "black";
-    span.style.backgroundColor = invert ? "black" : "white";
+    if (finalTokens[i].str.length === 1) {
+      span.style.color = "#404040";
+      span.style.backgroundColor = "#C0C0C0";
+    } else {
+      span.style.color = invert ? "white" : "black";
+      span.style.backgroundColor = invert ? "black" : "white";
+    }
     span.append(finalTokens[i].str);
     document.body.appendChild(span);
     invert = !invert;
