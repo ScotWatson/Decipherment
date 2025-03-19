@@ -23,11 +23,13 @@ const btnOpen = document.createElement("button");
 btnOpen.append("Open File");
 btnOpen.addEventListener("click", readFile);
 document.body.appendChild(btnOpen);
+const inpThreshold = document.createElement("input");
+document.body.appendChild(inpThreshold);
 
-const thresholdZ = 5;
 const reliableZ = 3;
 
 async function readFile() {
+  const thresholdZ = parseFloat(inpThreshold.value);
   const file = await openFileDialog();
   const contents = await file.text();
   const startTime = performance.now();
